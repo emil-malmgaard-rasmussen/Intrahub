@@ -10,7 +10,7 @@ import {useEffect, useState} from 'react';
 import {collection, getDocs, limit, query, where} from 'firebase/firestore';
 import {db} from '../../Firebase';
 import {getAuth} from 'firebase/auth';
-import {getNetworkId, setNetworkId} from '../../utils/LocalStorage';
+import {getNetworkId} from '../../utils/LocalStorage';
 
 const DashboardPage = () => {
     const theme = useTheme();
@@ -21,7 +21,7 @@ const DashboardPage = () => {
     const networkId = getNetworkId();
     const [loading, setLoading] = useState(true);
     const user = getAuth().currentUser;
-    console.log("id!", networkId);
+
     const fetchDocuments = async () => {
         try {
             setLoading(true);

@@ -97,13 +97,13 @@ export default function Guide() {
                             alignItems: "center",
                         }}
                     >
-                        <Typography
-                            variant="body2"
-                            sx={{ fontWeight: "bold", fontSize: "14px", color: "#0689FF" }}
-                        >
-                            Hvordan opretter jeg virksomhed
-                        </Typography>
-                        <ArrowRightAlt style={{ color: "#0689FF" }} />
+                        {/*<Typography*/}
+                        {/*    variant="body2"*/}
+                        {/*    sx={{ fontWeight: "bold", fontSize: "14px", color: "#0689FF" }}*/}
+                        {/*>*/}
+                        {/*    Hvordan opretter jeg virksomhed*/}
+                        {/*</Typography>*/}
+                        {/*<ArrowRightAlt style={{ color: "#0689FF" }} />*/}
                     </Box>
                 </GuideBox>
                 <GuideBox>
@@ -127,13 +127,13 @@ export default function Guide() {
                             alignItems: "center",
                         }}
                     >
-                        <Typography
-                            variant="body2"
-                            sx={{ fontWeight: "bold", fontSize: "14px", color: "#0689FF" }}
-                        >
-                            Hvordan opretter jeg resourcer
-                        </Typography>
-                        <ArrowRightAlt style={{ color: "#0689FF" }} />
+                        {/*<Typography*/}
+                        {/*    variant="body2"*/}
+                        {/*    sx={{ fontWeight: "bold", fontSize: "14px", color: "#0689FF" }}*/}
+                        {/*>*/}
+                        {/*    Hvordan opretter jeg resourcer*/}
+                        {/*</Typography>*/}
+                        {/*<ArrowRightAlt style={{ color: "#0689FF" }} />*/}
                     </Box>
                 </GuideBox>
                 <GuideBox>
@@ -157,13 +157,13 @@ export default function Guide() {
                             alignItems: "center",
                         }}
                     >
-                        <Typography
-                            variant="body2"
-                            sx={{ fontWeight: "bold", fontSize: "14px", color: "#0689FF" }}
-                        >
-                            Hvordan uploader jeg
-                        </Typography>
-                        <ArrowRightAlt style={{ color: "#0689FF" }} />
+                        {/*<Typography*/}
+                        {/*    variant="body2"*/}
+                        {/*    sx={{ fontWeight: "bold", fontSize: "14px", color: "#0689FF" }}*/}
+                        {/*>*/}
+                        {/*    Hvordan uploader jeg*/}
+                        {/*</Typography>*/}
+                        {/*<ArrowRightAlt style={{ color: "#0689FF" }} />*/}
                     </Box>
                 </GuideBox>
             </GuidesBox>

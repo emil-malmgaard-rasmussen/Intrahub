@@ -5,11 +5,10 @@ import Featured from "./components/Featured";
 import Footer from "./components/Footer";
 import Navbar from './components/Navbar';
 
-const LandingPage = () => {
+const PrivacyPage = () => {
     return (
         <div className="App">
             <Navbar/>
-            <Hero />
             <Guide />
             {/*<Properties />*/}
             <MoreDetail />
@@ -19,4 +18,4 @@ const LandingPage = () => {
     );
 }
 
-export default LandingPage;
+export default PrivacyPage;

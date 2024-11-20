@@ -1,25 +1,31 @@
-import React, {useEffect, useState} from 'react';
-import {Navigate, Route, Routes} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import {Navigate, Route, Routes, useNavigate} from 'react-router-dom';
 import DashboardPage from '../features/dashboard/DashboardPage';
 import Profile from '../features/profile/Profile';
-import {useAuth} from '../features/auth/AuthProvider';
-import {DashboardLayout} from '../features/dashboard/layout/DashboardLayout';
+import { useAuth } from '../features/auth/AuthProvider';
+import { DashboardLayout } from '../features/dashboard/layout/DashboardLayout';
 import ProjectsPage from '../features/projects/ProjectsPage';
 import UsersPage from '../features/users/UsersPage';
 import PostsPage from '../features/posts/PostsPage';
 import ApvListPage from '../features/apvs/ApvListPage';
-import {ProjectApvDetailsPage} from '../features/apvs/ProjectApvDetailsPage';
+import { ProjectApvDetailsPage } from '../features/apvs/ProjectApvDetailsPage';
 import LandingPage from '../features/landingpage/index';
-import EditOrganizationPage from '../features/organizations/EditOrganizationPage';
-import {EmployeeApvDetailsPage} from '../features/apvs/EmployeeApvDetailsPage';
-import {getNetworkId, setNetworkId} from '../utils/LocalStorage';
-import {collection, getDocs, query, where} from 'firebase/firestore';
-import {db} from '../Firebase';
+import EditNetworkPage from '../features/networks/EditNetworkPage';
+import { EmployeeApvDetailsPage } from '../features/apvs/EmployeeApvDetailsPage';
+import { getNetworkId, setNetworkId } from '../utils/LocalStorage';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../Firebase';
+import PrivacyPage from '../features/landingpage/PrivacyPage';
+import Register from '../features/auth/Register';
+import {CreateNetworkPage} from '../features/networks/CreateNetworkPage';
 
 const ProtectedRoutes = () => {
-    const {user} = useAuth();
-    const networkId = getNetworkId()
+    const { user } = useAuth();
+    const networkId = getNetworkId();
     const [localNetworkId, setLocalNetworkId] = useState<string | null>(networkId);
+    const [loading, setLoading] = useState(true); // Tracks network fetching state
+    const navigate = useNavigate();
+
     const handleStorageChange = () => {
         const newNetworkId = getNetworkId();
         if (newNetworkId !== networkId && newNetworkId) {
@@ -33,51 +39,66 @@ const ProtectedRoutes = () => {
             const networkRef = collection(db, 'NETWORKS');
             const q = query(
                 networkRef,
-                where("administrators", "array-contains", user?.uid) || where('users', 'array-contains', user?.uid));
+                where('administrators', 'array-contains', user?.uid) || where('users', 'array-contains', user?.uid)
+            );
             const querySnapshot = await getDocs(q);
+
             if (!querySnapshot.empty) {
-                setNetworkId(querySnapshot.docs[0].data().id)
+                const fetchedNetworkId = querySnapshot.docs[0].data().id;
+                setNetworkId(fetchedNetworkId);
+                setLocalNetworkId(fetchedNetworkId);
             } else {
-                console.warn("NO NETWORKS");
-                return [];
+                console.warn('NO NETWORKS');
+                setLocalNetworkId(null); // No network found
             }
         } catch (error) {
-            console.error("Error fetching network:", error);
-            return [];
+            console.error('Error fetching network:', error);
+            setLocalNetworkId(null);
+        } finally {
+            setLoading(false); // Set loading to false after fetching
         }
     };
 
     useEffect(() => {
         if (!networkId) {
             fetchNetwork();
+        } else {
+            setLoading(false); // Network ID is already present
         }
         window.addEventListener('storage', handleStorageChange);
         return () => {
             window.removeEventListener('storage', handleStorageChange);
         };
-    }, [localNetworkId])
+    }, [localNetworkId]);
 
     if (!user) {
-        return <Navigate to="/login"/>;
+        return <Navigate to="/login" />;
+    }
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!localNetworkId) {
+        navigate('/create/group');
     }
 
     return (
         <Routes>
-            <Route path="/" element={<LandingPage/>}/>
-            <Route
-                element={
-                    <DashboardLayout/>
-                }
-            >
-                <Route path="/dashboard" element={<DashboardPage/>}/>
-                <Route path="/profile" element={<Profile/>}/>
-                <Route path="/projects" element={<ProjectsPage/>}/>
-                <Route path="/posts" element={<PostsPage/>}/>
-                <Route path="/users" element={<UsersPage/>}/>
-                <Route path="/apvs" element={<ApvListPage/>}/>
-                <Route path="/apvs/project/:id" element={<ProjectApvDetailsPage/>}/>
-                <Route path="/apvs/employee/:id" element={<EmployeeApvDetailsPage/>}/>
-                <Route path="/organization/settings" element={<EditOrganizationPage/>}/>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/create/group" element={<CreateNetworkPage />} />
+            <Route element={<DashboardLayout />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="/posts" element={<PostsPage />} />
+                <Route path="/users" element={<UsersPage />} />
+                <Route path="/apvs" element={<ApvListPage />} />
+                <Route path="/apvs/project/:id" element={<ProjectApvDetailsPage />} />
+                <Route path="/apvs/employee/:id" element={<EmployeeApvDetailsPage />} />
+                <Route path="/organization/settings" element={<EditNetworkPage />} />
             </Route>
         </Routes>
     );

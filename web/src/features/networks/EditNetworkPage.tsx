@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import {getNetworkId} from '../../utils/LocalStorage';
 
-export default function EditOrganizationPage() {
+export default function EditNetworkPage() {
     const networkId = getNetworkId();
     const [network, setNetwork] = useState<any>(null);
     const [loading, setLoading] = useState(true);

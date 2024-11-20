@@ -15,7 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import {Contacts, FeaturedPlayList, Home, ListAlt, MiscellaneousServices} from "@mui/icons-material";
 import CustomButton from '../../../components/CustomButton';
 import logo from '../assets/logo.svg';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {getAuth} from 'firebase/auth';
 
 const NavbarContainer = styled(Box)(({theme}) => ({
@@ -99,13 +99,19 @@ const ListComponent = () => (
 export default function Navbar() {
     const [showMenu, setShowMenu] = useState(false);
     const authUser = getAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const handleScroll = (sectionId: string) => {
+        if(location.pathname === '/privacy') {
+            navigate('/');
+            return;
+        }
         const section = document.getElementById(sectionId);
         if (section) {
             section.scrollIntoView({behavior: "smooth"});
         }
     };
-    const navigate = useNavigate();
 
     return (
         <NavbarContainer>
@@ -127,7 +133,7 @@ export default function Navbar() {
                 <NavbarLink onClick={() => handleScroll("home")}>Hjem</NavbarLink>
                 <NavbarLink onClick={() => handleScroll("guide")}>Funktioner</NavbarLink>
                 <NavbarLink onClick={() => handleScroll("about")}>Om</NavbarLink>
-                <NavbarLink onClick={() => handleScroll("about")}>Kontakt</NavbarLink>
+                {/*<NavbarLink onClick={() => handleScroll("about")}>Kontakt</NavbarLink>*/}
             </NavbarLinkBox>
 
             <Box sx={{display: "flex", alignItems: "center", columnGap: 2}}>
