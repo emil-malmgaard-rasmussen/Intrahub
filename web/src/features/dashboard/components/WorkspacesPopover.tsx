@@ -8,8 +8,8 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import { Label } from '../../../components/Label';
 import {varAlpha} from '../../../theme/styles/utils';
 import { Iconify } from '../../../components/Iconify';
-import LocalStorage from '../../../utils/LocalStorage';
 import Avatar from '@mui/material/Avatar';
+import {getNetworkId, setNetworkId} from '../../../utils/LocalStorage';
 
 export type WorkspacesPopoverProps = ButtonBaseProps & {
     data?: {
@@ -21,7 +21,7 @@ export type WorkspacesPopoverProps = ButtonBaseProps & {
 };
 
 export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopoverProps) {
-    const localStorageNetworkId = LocalStorage.getNetworkId();
+    const localStorageNetworkId = getNetworkId();
     const dataNetworkArrayIndex = data?.findIndex(d => d.id === localStorageNetworkId);
     const [workspace, setWorkspace] = useState(localStorageNetworkId ? data[dataNetworkArrayIndex] : data[0]);
 
@@ -37,7 +37,7 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
 
     const handleChangeWorkspace = useCallback(
         (newValue: (typeof data)[number]) => {
-            LocalStorage.setNetworkId(newValue.id);
+            setNetworkId(newValue.id);
             setWorkspace(newValue);
             window.dispatchEvent(new Event('storage'))
             handleClosePopover();

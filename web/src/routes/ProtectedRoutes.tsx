@@ -7,19 +7,19 @@ import {DashboardLayout} from '../features/dashboard/layout/DashboardLayout';
 import ProjectsPage from '../features/projects/ProjectsPage';
 import UsersPage from '../features/users/UsersPage';
 import PostsPage from '../features/posts/PostsPage';
-import LocalStorage from '../utils/LocalStorage';
 import ApvListPage from '../features/apvs/ApvListPage';
 import {ProjectApvDetailsPage} from '../features/apvs/ProjectApvDetailsPage';
 import LandingPage from '../features/landingpage/index';
 import EditOrganizationPage from '../features/organizations/EditOrganizationPage';
 import { EmployeeApvDetailsPage } from '../features/apvs/EmployeeApvDetailsPage';
+import { getNetworkId } from '../utils/LocalStorage';
 
 const ProtectedRoutes = () => {
     const { user } = useAuth();
-    const [networkId, setNetworkId] = useState(LocalStorage.getNetworkId());
+    const [networkId, setNetworkId] = useState(getNetworkId());
 
     const handleStorageChange = () => {
-        const newNetworkId = LocalStorage.getNetworkId();
+        const newNetworkId = getNetworkId();
         if (newNetworkId !== networkId) {
             setNetworkId(newNetworkId);
         }

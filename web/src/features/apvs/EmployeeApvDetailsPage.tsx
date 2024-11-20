@@ -1,12 +1,23 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {Box, Breadcrumbs, CircularProgress, Link, Paper, Stack, Table, TableBody, TableContainer, Typography} from '@mui/material';
+import {
+    Box,
+    Breadcrumbs,
+    CircularProgress,
+    Link,
+    Paper,
+    Stack,
+    Table,
+    TableBody,
+    TableContainer,
+    Typography
+} from '@mui/material';
 import {useTable} from '../users/UsersPage';
 import {EmployeeApvModel, Question} from '../../firebase/models/EmployeeApvModel';
 import {fetchEmployeeApv} from '../../firebase/ApvQueries';
 import {Scrollbar} from '../../components/Scrollbar';
-import {TableEmptyRows, UserTableRow} from '../users/components/table/UsersTable';
-import { emptyRows } from '../users/components/table/utils';
+import {TableEmptyRows} from '../users/components/table/UsersTable';
+import {emptyRows} from '../users/components/table/utils';
 import {ParticipantsTableHead, ParticipantTableRow} from './components/table/ParticipantsTable';
 
 export const EmployeeApvDetailsPage = () => {
@@ -54,7 +65,7 @@ export const EmployeeApvDetailsPage = () => {
             </Paper>
             <Paper variant="outlined" sx={{p: 2, mb: 3}}>
                 <Typography variant="h6">Spørgsmål</Typography>
-                <Scrollbar sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                <Scrollbar sx={{maxHeight: 400, overflowY: 'auto'}}>
                     <Stack component="ul">
                         {apv.questions?.map((question: Question, index: number) => (
                             <Box key={index} component="li" sx={{p: 1}}>

@@ -1,11 +1,11 @@
 import {collection, doc, getDoc, getDocs, query, Timestamp, where} from 'firebase/firestore';
 import {db} from '../Firebase';
-import LocalStorage from '../utils/LocalStorage';
+import {getNetworkId} from  '../utils/LocalStorage';
 import { EmployeeApvModel } from './models/EmployeeApvModel';
 
 
 export async function fetchApvs(): Promise<EmployeeApvModel[]> {
-    const networkId = LocalStorage.getNetworkId();
+    const networkId = getNetworkId();
 
     try {
         const apvRef = collection(db, "APV");

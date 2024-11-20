@@ -16,7 +16,6 @@ import {useCallback, useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import {Iconify} from '../../../../components/Iconify';
 import InputAdornment from '@mui/material/InputAdornment';
-import {Label} from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
 import MenuList from '@mui/material/MenuList';
@@ -27,7 +26,7 @@ type TableEmptyRowsProps = TableRowProps & {
     height?: number;
 };
 
-export const TableEmptyRows = ({ emptyRows, height, sx, ...other }: TableEmptyRowsProps) => {
+export const TableEmptyRows = ({emptyRows, height, sx, ...other}: TableEmptyRowsProps) => {
     if (!emptyRows) {
         return null;
     }
@@ -42,7 +41,7 @@ export const TableEmptyRows = ({ emptyRows, height, sx, ...other }: TableEmptyRo
             }}
             {...other}
         >
-            <TableCell colSpan={9} />
+            <TableCell colSpan={9}/>
         </TableRow>
     );
 }
@@ -50,19 +49,19 @@ type TableNoDataProps = TableRowProps & {
     searchQuery: string;
 };
 
-export const TableNoData = ({ searchQuery, ...other }: TableNoDataProps) => {
+export const TableNoData = ({searchQuery, ...other}: TableNoDataProps) => {
     return (
         <TableRow {...other}>
             <TableCell align="center" colSpan={7}>
-                <Box sx={{ py: 15, textAlign: 'center' }}>
-                    <Typography variant="h6" sx={{ mb: 1 }}>
+                <Box sx={{py: 15, textAlign: 'center'}}>
+                    <Typography variant="h6" sx={{mb: 1}}>
                         Not found
                     </Typography>
 
                     <Typography variant="body2">
                         No results found for &nbsp;
                         <strong>&quot;{searchQuery}&quot;</strong>.
-                        <br /> Try checking for typos or using complete words.
+                        <br/> Try checking for typos or using complete words.
                     </Typography>
                 </Box>
             </TableCell>
@@ -81,14 +80,14 @@ type UsersTableHeadProps = {
 };
 
 export const UsersTableHead = ({
-                                  order,
-                                  onSort,
-                                  orderBy,
-                                  rowCount,
-                                  headLabel,
-                                  numSelected,
-                                  onSelectAllRows,
-                              }: UsersTableHeadProps) => {
+                                   order,
+                                   onSort,
+                                   orderBy,
+                                   rowCount,
+                                   headLabel,
+                                   numSelected,
+                                   onSelectAllRows,
+                               }: UsersTableHeadProps) => {
     return (
         <TableHead>
             <TableRow>
@@ -107,7 +106,7 @@ export const UsersTableHead = ({
                         key={headCell.id}
                         align={headCell.align || 'left'}
                         sortDirection={orderBy === headCell.id ? order : false}
-                        sx={{ width: headCell.width, minWidth: headCell.minWidth }}
+                        sx={{width: headCell.width, minWidth: headCell.minWidth}}
                     >
                         <TableSortLabel
                             hideSortIcon
@@ -117,7 +116,7 @@ export const UsersTableHead = ({
                         >
                             {headCell.label}
                             {orderBy === headCell.id ? (
-                                <Box sx={{ ...visuallyHidden }}>
+                                <Box sx={{...visuallyHidden}}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                 </Box>
                             ) : null}
@@ -145,7 +144,7 @@ type UsersTableRowProps = {
     onSelectRow: () => void;
 };
 
-export const UserTableRow = ({ row, selected, onSelectRow }: UsersTableRowProps) => {
+export const UserTableRow = ({row, selected, onSelectRow}: UsersTableRowProps) => {
     const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
     const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -160,12 +159,12 @@ export const UserTableRow = ({ row, selected, onSelectRow }: UsersTableRowProps)
         <>
             <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
                 <TableCell padding="checkbox">
-                    <Checkbox disableRipple checked={selected} onChange={onSelectRow} />
+                    <Checkbox disableRipple checked={selected} onChange={onSelectRow}/>
                 </TableCell>
 
                 <TableCell component="th" scope="row">
                     <Box gap={2} display="flex" alignItems="center">
-                        <Avatar alt={row.displayName} src={row.avatarUrl} />
+                        <Avatar alt={row.displayName} src={row.avatarUrl}/>
                         {row.displayName}
                     </Box>
                 </TableCell>
@@ -176,7 +175,7 @@ export const UserTableRow = ({ row, selected, onSelectRow }: UsersTableRowProps)
 
                 <TableCell align="center">
                     {row.isVerified ? (
-                        <Iconify width={22} icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
+                        <Iconify width={22} icon="solar:check-circle-bold" sx={{color: 'success.main'}}/>
                     ) : (
                         '-'
                     )}
@@ -184,7 +183,7 @@ export const UserTableRow = ({ row, selected, onSelectRow }: UsersTableRowProps)
 
                 <TableCell align="right">
                     <IconButton onClick={handleOpenPopover}>
-                        <Iconify icon="eva:more-vertical-fill" />
+                        <Iconify icon="eva:more-vertical-fill"/>
                     </IconButton>
                 </TableCell>
             </TableRow>
@@ -193,8 +192,8 @@ export const UserTableRow = ({ row, selected, onSelectRow }: UsersTableRowProps)
                 open={!!openPopover}
                 anchorEl={openPopover}
                 onClose={handleClosePopover}
-                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{vertical: 'top', horizontal: 'left'}}
+                transformOrigin={{vertical: 'top', horizontal: 'right'}}
             >
                 <MenuList
                     disablePadding
@@ -208,17 +207,17 @@ export const UserTableRow = ({ row, selected, onSelectRow }: UsersTableRowProps)
                             px: 1,
                             gap: 2,
                             borderRadius: 0.75,
-                            [`&.${menuItemClasses.selected}`]: { bgcolor: 'action.selected' },
+                            [`&.${menuItemClasses.selected}`]: {bgcolor: 'action.selected'},
                         },
                     }}
                 >
                     <MenuItem onClick={handleClosePopover}>
-                        <Iconify icon="solar:pen-bold" />
+                        <Iconify icon="solar:pen-bold"/>
                         Edit
                     </MenuItem>
 
-                    <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
-                        <Iconify icon="solar:trash-bin-trash-bold" />
+                    <MenuItem onClick={handleClosePopover} sx={{color: 'error.main'}}>
+                        <Iconify icon="solar:trash-bin-trash-bold"/>
                         Delete
                     </MenuItem>
                 </MenuList>
@@ -233,7 +232,7 @@ type TableTableToolbarProps = {
     onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const UserTableToolbar = ({ numSelected, filterName, onFilterName }: TableTableToolbarProps) => {
+export const UserTableToolbar = ({numSelected, filterName, onFilterName}: TableTableToolbarProps) => {
     return (
         <Toolbar
             sx={{
@@ -259,23 +258,23 @@ export const UserTableToolbar = ({ numSelected, filterName, onFilterName }: Tabl
                     placeholder="Søg brugere..."
                     startAdornment={
                         <InputAdornment position="start">
-                            <Iconify width={20} icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                            <Iconify width={20} icon="eva:search-fill" sx={{color: 'text.disabled'}}/>
                         </InputAdornment>
                     }
-                    sx={{ maxWidth: 320 }}
+                    sx={{maxWidth: 320}}
                 />
             )}
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
                     <IconButton>
-                        <Iconify icon="solar:trash-bin-trash-bold" />
+                        <Iconify icon="solar:trash-bin-trash-bold"/>
                     </IconButton>
                 </Tooltip>
             ) : (
                 <Tooltip title="Filter list">
                     <IconButton>
-                        <Iconify icon="ic:round-filter-list" />
+                        <Iconify icon="ic:round-filter-list"/>
                     </IconButton>
                 </Tooltip>
             )}

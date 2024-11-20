@@ -1,15 +1,14 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import {
+    browserLocalPersistence,
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
     onAuthStateChanged,
     setPersistence,
-    browserLocalPersistence,
+    signInWithEmailAndPassword,
+    signOut,
     User
 } from 'firebase/auth';
-import { auth } from '../../Firebase';
-import {useNavigate} from 'react-router-dom';
+import {auth} from '../../Firebase';
 
 interface AuthContextType {
     user: User | null;
@@ -20,20 +19,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({children}: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        // Set persistence to local to keep the user logged in across page refreshes
         setPersistence(auth, browserLocalPersistence)
             .catch(error => console.error("Error setting persistence:", error));
 
-        // Listen for auth state changes and update the user state
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
         });
 
-        // Cleanup the listener on unmount
         return () => unsubscribe();
     }, []);
 
@@ -54,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, register, login, logout }}>
+        <AuthContext.Provider value={{user, register, login, logout}}>
             {children}
         </AuthContext.Provider>
     );

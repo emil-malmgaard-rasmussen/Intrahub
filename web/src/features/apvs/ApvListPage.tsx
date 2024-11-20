@@ -1,4 +1,4 @@
-import React, {SyntheticEvent, useCallback, useEffect, useState} from 'react';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -8,25 +8,18 @@ import {Breakpoint, useTheme} from '@mui/material/styles';
 import {Iconify} from '../../components/Iconify';
 import {collection, getDocs, getFirestore, orderBy, query, where} from 'firebase/firestore';
 import {Pagination} from '@mui/lab';
-import LocalStorage from '../../utils/LocalStorage';
 import Grid from '@mui/material/Grid2';
 import {ApvDrawer} from './components/drawer/ApvDrawer';
 import {ProjectApvItem} from './components/ProjectApvItem';
 import {EmployeeApvItem} from './components/EmployeeApvItem';
+import { getNetworkId } from '../../utils/LocalStorage';
 
 const db = getFirestore();
 
 const ApvListPage = () => {
-    const [sortBy, setSortBy] = useState('desc');
-    const networkId = LocalStorage.getNetworkId();
-    const handleSort = useCallback((newSort: string) => {
-        setSortBy(newSort);
-    }, []);
+    const networkId = getNetworkId();
     const theme = useTheme();
-    const [filterName, setFilterName] = useState('');
     const [apvs, setApvs] = useState<any[]>([]);
-    const [page, setPage] = useState(1);
-    const postsPerPage = 10;
     const [loading, setLoading] = useState(true);
     const layoutQuery: Breakpoint = 'lg';
     const [open, setOpen] = useState(false);
@@ -37,23 +30,6 @@ const ApvListPage = () => {
         setNotificationOpen(false);
     };
 
-    const handleChangePage = (event: any, value: any) => {
-        setPage(value);
-    };
-
-
-    const handleSearch = (newFilterName: string) => {
-        setFilterName(newFilterName);
-        setPage(1);
-    };
-
-    const filteredPosts = apvs.filter(post =>
-        post.title?.toLowerCase().includes(filterName.toLowerCase())
-    );
-
-    const paginatedPosts = filteredPosts.slice((page - 1) * postsPerPage, page * postsPerPage);
-
-
     const fetchApvs = async () => {
         try {
             setLoading(true);
@@ -62,7 +38,7 @@ const ApvListPage = () => {
             const apvQuery = query(
                 apvRef,
                 where('networkId', '==', networkId),
-                orderBy('createdAt', (sortBy === 'asc' || sortBy === 'desc') ? sortBy : 'desc')
+                orderBy('createdAt', 'desc')
             );
 
             const apvSnapshot = await getDocs(apvQuery);
@@ -81,7 +57,7 @@ const ApvListPage = () => {
 
     useEffect(() => {
         fetchApvs();
-    }, [networkId, sortBy]);
+    }, [networkId]);
 
     if (loading) return <div>Loading...</div>;
 
@@ -124,12 +100,12 @@ const ApvListPage = () => {
             <Grid container spacing={3}>
                 {apvs.map((apv) => (
                     apv.apvType === 'employeeApv' ? (
-                        <Grid key={apv.id} size={{ xs: 12, sm: 6, md: 3 }}>
-                            <EmployeeApvItem apv={apv} />
+                        <Grid key={apv.id} size={{xs: 12, sm: 6, md: 3}}>
+                            <EmployeeApvItem apv={apv}/>
                         </Grid>
                     ) : (
-                        <Grid key={apv.id} size={{ xs: 12, sm: 6, md: 3 }}>
-                            <ProjectApvItem apv={apv} />
+                        <Grid key={apv.id} size={{xs: 12, sm: 6, md: 3}}>
+                            <ProjectApvItem apv={apv}/>
                         </Grid>
                     )
                 ))}

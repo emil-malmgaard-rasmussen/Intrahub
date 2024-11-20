@@ -24,7 +24,7 @@ import {Iconify} from '../../components/Iconify';
 import {Scrollbar} from '../../components/Scrollbar';
 import {collection, getDocs, getFirestore, query, where} from 'firebase/firestore';
 import {ProjectsDrawer} from './components/ProjectsDrawer';
-import LocalStorage from '../../utils/LocalStorage';
+import {getNetworkId} from  '../../utils/LocalStorage';
 
 const db = getFirestore();
 
@@ -37,7 +37,7 @@ const ProjectsPage = () => {
     const layoutQuery: Breakpoint = 'lg';
     const [open, setOpen] = useState(false);
     const [notificationOpen, setNotificationOpen] = useState(false);
-    const networkId = LocalStorage.getNetworkId();
+    const networkId = getNetworkId();
 
     const handleNotificationClose = (event?: SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
         if (reason === 'clickaway') return;

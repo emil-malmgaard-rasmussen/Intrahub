@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
-import {Alert, Button, CircularProgress, Drawer, IconButton, Snackbar, SnackbarCloseReason, TextField, Typography} from '@mui/material';
+import {Button, CircularProgress, Drawer, IconButton, TextField, Typography} from '@mui/material';
 import {useForm} from 'react-hook-form';
-import {ChangeEvent, SyntheticEvent, useState} from 'react';
+import {ChangeEvent, useState} from 'react';
 import {useTheme} from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import {getAuth} from 'firebase/auth';
-import LocalStorage from '../../../utils/LocalStorage';
+import {getNetworkId} from  '../../../utils/LocalStorage';
 import {addDoc, collection, serverTimestamp} from 'firebase/firestore';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import {db, storage} from '../../../Firebase';
@@ -29,7 +29,7 @@ export const PostDrawer = (props: PostDrawerProps) => {
     const [preview, setPreview] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState<boolean>(false);
-    const networkId = LocalStorage.getNetworkId();
+    const networkId = getNetworkId();
 
     const handleResetFilter = () => {
         reset();
@@ -109,21 +109,21 @@ export const PostDrawer = (props: PostDrawerProps) => {
                     gap: 2,
                 }}
             >
-                <Box display="flex" alignItems="center" sx={{ pl: 2.5, pr: 1.5, py: 2 }}>
+                <Box display="flex" alignItems="center" sx={{pl: 2.5, pr: 1.5, py: 2}}>
                     <Typography variant="h6" flexGrow={1}>
                         Opret opslag
                     </Typography>
                     <IconButton onClick={handleResetFilter}>
                         <Badge color="error" variant="dot" invisible={!canReset()}>
-                            <Iconify icon="solar:refresh-linear" />
+                            <Iconify icon="solar:refresh-linear"/>
                         </Badge>
                     </IconButton>
                     <IconButton onClick={() => displayDrawer(false)}>
-                        <Iconify icon="mingcute:close-line" />
+                        <Iconify icon="mingcute:close-line"/>
                     </IconButton>
                 </Box>
-                <Divider />
-                <Box sx={{ pl: 2.5, pr: 1.5, py: 2 }}>
+                <Divider/>
+                <Box sx={{pl: 2.5, pr: 1.5, py: 2}}>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Box sx={{mb: 3, display: 'flex', flexDirection: 'column'}}>
                             <TextField
@@ -240,7 +240,7 @@ export const PostDrawer = (props: PostDrawerProps) => {
                             </Button>
                         </Box>
                         <Button variant="contained" color="primary" fullWidth type="submit" disabled={uploading}>
-                            {uploading ? <CircularProgress color={'inherit'} /> : 'Opret'}
+                            {uploading ? <CircularProgress color={'inherit'}/> : 'Opret'}
                         </Button>
                     </form>
                 </Box>

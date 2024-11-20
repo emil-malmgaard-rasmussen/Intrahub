@@ -1,6 +1,5 @@
 import { forwardRef } from 'react';
 import { useTheme } from '@mui/material/styles';
-import type { Theme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import {stylesMode, varAlpha} from '../theme/styles/utils';

@@ -1,17 +1,15 @@
-import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import {db, storage} from '../../Firebase';
 import { Box, Paper, Stack, Typography, Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import LocalStorage from '../../utils/LocalStorage';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
+import {getNetworkId} from '../../utils/LocalStorage';
 
 export default function EditOrganizationPage() {
-    const networkId = LocalStorage.getNetworkId();
+    const networkId = getNetworkId();
     const [network, setNetwork] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
 
     const fetchNetworkDetails = async () => {
         try {

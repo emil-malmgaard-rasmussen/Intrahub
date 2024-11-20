@@ -1,37 +1,19 @@
 import Grid from '@mui/material/Grid2';
-import {
-    Alert,
-    Button,
-    CircularProgress, FormControl, InputLabel,
-    Select, SelectChangeEvent,
-    Snackbar, SnackbarCloseReason,
-    TableCell,
-    TableHead,
-    TableRow,
-    TextField,
-    Typography
-} from '@mui/material';
+import {Button, CircularProgress, FormControl, InputLabel, Select, TextField, Typography} from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import Add from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {HealthSafetySection} from '../tabs/sections/HealthSafetySection';
-import {EvaluationSection} from '../tabs/sections/EvaluationSection';
-import React, {SyntheticEvent, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, useFieldArray, useForm} from 'react-hook-form';
 import {addDoc, collection, getDocs, query, serverTimestamp, Timestamp, where} from 'firebase/firestore';
 import {db} from '../../../../Firebase';
-import {ProjectsDrawer} from '../../../projects/components/ProjectsDrawer';
 import {getAuth} from 'firebase/auth';
-import LocalStorage from '../../../../utils/LocalStorage';
+import {getNetworkId} from '../../../../utils/LocalStorage';
 import Divider from '@mui/material/Divider';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Chip from '@mui/material/Chip';
 import {Theme, useTheme} from '@mui/material/styles';
-import data from '../../../landingpage/data';
 
 interface ProjectApvTypeProps {
     displayDrawer: (value: boolean) => void;
@@ -75,24 +57,9 @@ const EmployeeApvType = (props: ProjectApvTypeProps) => {
     const theme = useTheme();
     const [creating, setCreating] = useState<boolean>(false);
     const currentUser = getAuth().currentUser;
-    const [open, setOpen] = useState(false);
-    const networkId = LocalStorage.getNetworkId();
-    const [notificationOpen, setNotificationOpen] = useState(false);
-    const [personName, setPersonName] = React.useState<string[]>([]);
+    const networkId = getNetworkId();
     const [users, setUsers] = useState<any[]>([]);
-    const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
 
-    const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-    // const handleChange = (event:any) => {
-        const {
-            target: { value },
-        } = event;
-        console.log(value);
-
-        setPersonName(
-            typeof value === 'string' ? value.split(',') : value,
-        );
-    };
 
     const methods = useForm<test>({
         defaultValues: {
@@ -105,11 +72,6 @@ const EmployeeApvType = (props: ProjectApvTypeProps) => {
             participants: [],
         }
     });
-
-    const handleNotificationClose = (event?: SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
-        if (reason === 'clickaway') return;
-        setNotificationOpen(false);
-    };
 
     const {register, handleSubmit, reset, control} = methods;
 
@@ -139,21 +101,16 @@ const EmployeeApvType = (props: ProjectApvTypeProps) => {
     };
 
     const fetchUsers = async () => {
-        setLoadingUsers(true);
-        try {
-            const usersRef = collection(db, 'USERS');
-            const q = query(usersRef, where('networks', 'array-contains', networkId));
-            const querySnapshot = await getDocs(q);
+        const usersRef = collection(db, 'USERS');
+        const q = query(usersRef, where('networks', 'array-contains', networkId));
+        const querySnapshot = await getDocs(q);
 
-            const fetchedUsers = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+        const fetchedUsers = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
 
-            setUsers(fetchedUsers);
-        } finally {
-            setLoadingUsers(false);
-        }
+        setUsers(fetchedUsers);
     };
 
     useEffect(() => {
@@ -172,22 +129,22 @@ const EmployeeApvType = (props: ProjectApvTypeProps) => {
                     <Typography variant="h6" gutterBottom>
                         Spørgsmål
                     </Typography>
-                    <Divider />
+                    <Divider/>
                     <FormControl
                         variant="outlined"
-                        style={{ width: "100%", marginBottom: 32, margin: 1 }}
+                        style={{width: "100%", marginBottom: 32, margin: 1}}
                     >
                         <InputLabel id="participants">Spørgsmål deltagere</InputLabel>
                         <Select
                             labelId="participants"
                             label={"Spørgsmål deltagere"}
-                            style={{ width: "100%" }}
+                            style={{width: "100%"}}
                             multiple
                             variant="outlined"
                             value={participantsFields.map((field) => field.uid)} // Use UIDs from useFieldArray fields
                             onChange={(event) => {
                                 const {
-                                    target: { value },
+                                    target: {value},
                                 } = event;
 
                                 const updatedUids = typeof value === "string" ? value.split(",") : value;
@@ -198,7 +155,7 @@ const EmployeeApvType = (props: ProjectApvTypeProps) => {
                                     if (!isAlreadyAdded) {
                                         const user = users.find((user) => user.uid === uid);
                                         if (user) {
-                                            appendParticipant({ uid: user.uid, displayName: user.displayName });
+                                            appendParticipant({uid: user.uid, displayName: user.displayName});
                                         }
                                     }
                                 });
@@ -210,9 +167,9 @@ const EmployeeApvType = (props: ProjectApvTypeProps) => {
                                     }
                                 });
                             }}
-                            input={<OutlinedInput id="select-multiple-chip" label="Spørgsmål deltagere" />}
+                            input={<OutlinedInput id="select-multiple-chip" label="Spørgsmål deltagere"/>}
                             renderValue={(selectedUids) => (
-                                <Box sx={{ display: `--flexclip`, flexWrap: "wrap", gap: 0.5 }}>
+                                <Box sx={{display: `--flexclip`, flexWrap: "wrap", gap: 0.5}}>
                                     {selectedUids.map((uid) => {
                                         const participant = users.find((user) => user.uid === uid);
                                         return (
@@ -243,7 +200,8 @@ const EmployeeApvType = (props: ProjectApvTypeProps) => {
                         </Select>
                     </FormControl>
                     {fields.map((field, index) => (
-                        <Grid container spacing={2} key={field.id} alignItems="flex-start" sx={{ marginBottom: 2, py: 2}}>
+                        <Grid container spacing={2} key={field.id} alignItems="flex-start"
+                              sx={{marginBottom: 2, py: 2}}>
                             <Grid size={{xs: 5}}>
                                 <TextField
                                     fullWidth
@@ -266,12 +224,13 @@ const EmployeeApvType = (props: ProjectApvTypeProps) => {
                             </Grid>
                             <Grid size={{xs: 1}}>
                                 <IconButton color="error" onClick={() => remove(index)}>
-                                    <DeleteIcon />
+                                    <DeleteIcon/>
                                 </IconButton>
                             </Grid>
                         </Grid>
                     ))}
-                    <Button variant="outlined" sx={{my: 2}} onClick={() => append({ title: '', description: '', type: 'YesNo' })}>
+                    <Button variant="outlined" sx={{my: 2}}
+                            onClick={() => append({title: '', description: '', type: 'YesNo'})}>
                         Tilføj nyt spørgsmål
                     </Button>
                 </Grid>

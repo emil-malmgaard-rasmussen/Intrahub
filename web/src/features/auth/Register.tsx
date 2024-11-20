@@ -1,6 +1,4 @@
 import React, {useCallback, useState} from 'react';
-import {useAuth} from './AuthProvider';
-
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
@@ -15,25 +13,12 @@ import {AuthLayout} from './layout/AuthLayout';
 import { RouterLink } from './components/RouterLink';
 
 const Register = () => {
-    const {login} = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleSignIn = useCallback(() => {
         navigate('/');
     }, []);
-
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            await login(email, password);
-            alert("Login successful!");
-        } catch (error) {
-            alert("Error logging in");
-        }
-    };
 
     // return (
     //     <form onSubmit={handleLogin}>

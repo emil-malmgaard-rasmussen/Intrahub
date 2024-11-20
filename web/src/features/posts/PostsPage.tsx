@@ -11,7 +11,7 @@ import { Pagination } from '@mui/material'
 import {PostItem} from '../../components/PostItem';
 import {PostSearch} from './components/PostsSearch';
 import {PostSort} from './components/PostSort';
-import LocalStorage from '../../utils/LocalStorage';
+import {getNetworkId} from  '../../utils/LocalStorage';
 import Grid from '@mui/material/Grid2';
 import {PostDrawer} from './components/PostDrawer';
 
@@ -19,7 +19,7 @@ const db = getFirestore();
 
 const PostsPage = () => {
     const [sortBy, setSortBy] = useState('desc');
-    const networkId = LocalStorage.getNetworkId();
+    const networkId = getNetworkId();
     const handleSort = useCallback((newSort: string) => {
         setSortBy(newSort);
     }, []);

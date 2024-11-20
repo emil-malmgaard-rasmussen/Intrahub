@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import {Button, CircularProgress, Drawer, IconButton, TextField, Typography} from '@mui/material';
 import {useForm} from 'react-hook-form';
 import {useState} from 'react';
-import LocalStorage from '../../../utils/LocalStorage';
+import {getNetworkId} from  '../../../utils/LocalStorage';
 import {addDoc, collection} from 'firebase/firestore';
 import {db} from '../../../Firebase';
 import {Iconify} from '../../../components/Iconify';
@@ -18,10 +18,7 @@ export const ProjectsDrawer = (props: ProjectsDrawerProps) => {
     const {open, displayDrawer, showNotification} = props;
     const {register, handleSubmit, reset} = useForm();
     const [uploading, setUploading] = useState<boolean>(false);
-    const networkId = LocalStorage.getNetworkId();
-    const handleResetFilter = () => {
-        reset();
-    }
+    const networkId = getNetworkId();
 
     const onSubmit = async (data: any) => {
         setUploading(true);

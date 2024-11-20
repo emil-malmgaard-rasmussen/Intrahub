@@ -26,7 +26,7 @@ import {addDoc, collection, getDocs, query, serverTimestamp, where} from 'fireba
 import {db} from '../../../../Firebase';
 import {ProjectsDrawer} from '../../../projects/components/ProjectsDrawer';
 import {getAuth} from 'firebase/auth';
-import LocalStorage from '../../../../utils/LocalStorage';
+import {getNetworkId} from '../../../../utils/LocalStorage';
 
 interface ProjectApvTypeProps {
     displayDrawer: (value: boolean) => void;
@@ -40,7 +40,7 @@ const ProjectApvType = (props: ProjectApvTypeProps) => {
     const [loadingProjects, setLoadingProjects] = useState<boolean>(true);
     const [projects, setProjects] = useState<any[]>([]);
     const [open, setOpen] = useState(false);
-    const networkId = LocalStorage.getNetworkId();
+    const networkId = getNetworkId();
     const [notificationOpen, setNotificationOpen] = useState(false);
 
     const methods = useForm({

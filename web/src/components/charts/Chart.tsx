@@ -2,9 +2,6 @@ import type {BoxProps} from '@mui/material/Box';
 import Box from '@mui/material/Box';
 import type {Props} from 'react-apexcharts';
 import ApexChart from 'react-apexcharts';
-import type {SxProps, Theme} from '@mui/material/styles';
-import { useTheme } from '@mui/material/styles';
-import { varAlpha } from '../../theme/styles/utils';
 
 export type ChartProps = {
     type: Props['type'];
@@ -12,14 +9,9 @@ export type ChartProps = {
     options: Props['options'];
 };
 
-export type ChartBaseProps = Props;
 
 export type ChartOptions = Props['options'];
 
-export type ChartLoadingProps = {
-    disabled?: boolean;
-    sx?: SxProps<Theme>;
-};
 
 export function Chart({
                           sx,

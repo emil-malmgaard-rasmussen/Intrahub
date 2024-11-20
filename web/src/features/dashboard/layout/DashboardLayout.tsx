@@ -13,8 +13,7 @@ import {Iconify} from '../../../components/Iconify';
 import {collection, getDocs, query, where} from 'firebase/firestore';
 import {db} from '../../../Firebase';
 import {getAuth} from 'firebase/auth';
-import LocalStorage from '../../../utils/LocalStorage';
-import { Outlet } from 'react-router-dom';
+import {Outlet} from 'react-router-dom';
 
 export type DashboardLayoutProps = {
     sx?: SxProps<Theme>;
@@ -217,7 +216,7 @@ export function DashboardLayout({sx, header}: DashboardLayoutProps) {
                     ...sx,
                 }}
             >
-                <Outlet />
+                <Outlet/>
             </Box>
         </LayoutSection>
     );

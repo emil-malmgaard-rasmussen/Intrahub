@@ -1,22 +1,16 @@
-import { AnalyticsWidgetSummary } from "./components/AnalyticsWidgetSummary";
-import { Container, Paper, CircularProgress } from '@mui/material';
+import {AnalyticsWidgetSummary} from "./components/AnalyticsWidgetSummary";
+import {CircularProgress, Container} from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
-import { AnalyticsCurrentVisits } from "./components/AnalyticsCurrentVisits";
-import { AnalyticsWebsiteVisits } from "./components/AnalyticsWebsiteVisits";
-import { AnalyticsConversionRates } from "./components/AnalyticsConversionRates";
-import { AnalyticsCurrentSubject } from "./components/AnalyticsCurrentSubject";
-import { AnalyticsPosts } from "./components/AnalyticsPosts";
-import { AnalyticsOrderTimeline } from './components/AnalyticsOrderTimeline';
-import { AnalyticsTrafficBySite } from "./components/AnalyticsTrafficBySite";
-import { AnalyticsTasks } from "./components/AnalyticsTasks";
-import { Breakpoint, useTheme } from '@mui/material/styles';
-import { _posts, _tasks, _timeline } from "../../_data";
-import { useEffect, useState } from 'react';
-import { collection, getDocs, limit, query, where } from 'firebase/firestore';
-import { db } from '../../Firebase';
-import LocalStorage from '../../utils/LocalStorage';
+import {AnalyticsConversionRates} from "./components/AnalyticsConversionRates";
+import {AnalyticsCurrentSubject} from "./components/AnalyticsCurrentSubject";
+import {AnalyticsPosts} from "./components/AnalyticsPosts";
+import {Breakpoint, useTheme} from '@mui/material/styles';
+import {useEffect, useState} from 'react';
+import {collection, getDocs, limit, query, where} from 'firebase/firestore';
+import {db} from '../../Firebase';
 import {getAuth} from 'firebase/auth';
+import {getNetworkId} from '../../utils/LocalStorage';
 
 const DashboardPage = () => {
     const theme = useTheme();
@@ -24,7 +18,7 @@ const DashboardPage = () => {
     const [documents, setDocuments] = useState<any[]>([]);
     const [network, setNetwork] = useState<any>();
     const [posts, setPosts] = useState<any[]>([]);
-    const networkId = LocalStorage.getNetworkId();
+    const networkId = getNetworkId();
     const [loading, setLoading] = useState(true);
     const user = getAuth().currentUser;
 
@@ -108,20 +102,20 @@ const DashboardPage = () => {
                 },
             }}
         >
-            <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
+            <Typography variant="h4" sx={{mb: {xs: 3, md: 5}}}>
                 Hej, velkommen {user?.displayName} 👋
             </Typography>
 
             {loading ? (
-                <CircularProgress />
+                <CircularProgress/>
             ) : (
                 <Grid container spacing={3}>
-                    <Grid size={{ xs: 16, sm: 9, md: 4 }}>
+                    <Grid size={{xs: 16, sm: 9, md: 4}}>
                         <AnalyticsWidgetSummary
                             title="Dokumenter"
                             color="primary"
                             total={documents.length}
-                            icon={<img alt="icon" src="/assets/icons/dashboard/ic-glass-document.svg" />}
+                            icon={<img alt="icon" src="/assets/icons/dashboard/ic-glass-document.svg"/>}
                             chart={{
                                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug'],
                                 series: [22, 8, 35, 50, 82, 84, 77, 12],
@@ -129,12 +123,12 @@ const DashboardPage = () => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 16, sm: 9, md: 4 }}>
+                    <Grid size={{xs: 16, sm: 9, md: 4}}>
                         <AnalyticsWidgetSummary
                             title="Brugere"
                             total={network ? network.users.length : 0} // Use network data safely
                             color="secondary"
-                            icon={<img alt="icon" src="/assets/icons/dashboard/ic-glass-user.svg" />}
+                            icon={<img alt="icon" src="/assets/icons/dashboard/ic-glass-user.svg"/>}
                             chart={{
                                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug'],
                                 series: [56, 47, 40, 62, 73, 30, 23, 54],
@@ -142,12 +136,12 @@ const DashboardPage = () => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 16, sm: 9, md: 4 }}>
+                    <Grid size={{xs: 16, sm: 9, md: 4}}>
                         <AnalyticsWidgetSummary
                             title="Opslag"
                             total={posts.length}
                             color="error"
-                            icon={<img alt="icon" src="/assets/icons/dashboard/ic-glass-message.svg" />}
+                            icon={<img alt="icon" src="/assets/icons/dashboard/ic-glass-message.svg"/>}
                             chart={{
                                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug'],
                                 series: [40, 70, 50, 28, 70, 75, 7, 64],
@@ -155,35 +149,35 @@ const DashboardPage = () => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 6, lg: 8 }}>
+                    <Grid size={{xs: 12, md: 6, lg: 8}}>
                         <AnalyticsConversionRates
                             title="APV Besvarelser"
                             chart={{
                                 categories: ['Dec', 'Nov', 'Okt', 'Sep', 'Aug', 'Jul', 'Jun', 'Maj', 'Apr', 'Mar', 'Feb', 'Jan'],
                                 series: [
-                                    { name: '2022', data: [] },
-                                    { name: '2023', data: [] },
+                                    {name: '2022', data: []},
+                                    {name: '2023', data: []},
                                 ],
                             }}
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+                    <Grid size={{xs: 12, md: 6, lg: 4}}>
                         <AnalyticsCurrentSubject
                             title="APV besvarelser"
                             chart={{
                                 categories: ['Ulykker og sikkerhed', 'Kemikalier', 'Indeklima', 'Psykisk arbejdsmiljø', 'Ergonomi', 'Støj'],
                                 series: [
-                                    { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
-                                    { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
-                                    { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
+                                    {name: 'Series 1', data: [80, 50, 30, 40, 100, 20]},
+                                    {name: 'Series 2', data: [20, 30, 40, 80, 20, 80]},
+                                    {name: 'Series 3', data: [44, 76, 78, 13, 43, 10]},
                                 ],
                             }}
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 6, lg: 8 }}>
-                        <AnalyticsPosts title="Opslag" list={posts.slice(0, 5)} />
+                    <Grid size={{xs: 12, md: 6, lg: 8}}>
+                        <AnalyticsPosts title="Opslag" list={posts.slice(0, 5)}/>
                     </Grid>
                 </Grid>
             )}

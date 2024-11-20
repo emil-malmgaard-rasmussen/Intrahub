@@ -22,7 +22,7 @@ import {
 } from './components/table/UsersTable';
 import {collection, getDocs, query, where} from 'firebase/firestore';
 import {db} from '../../Firebase';
-import LocalStorage from '../../utils/LocalStorage';
+import {getNetworkId} from  '../../utils/LocalStorage';
 
 const UsersPage = () => {
     const table = useTable();
@@ -30,7 +30,7 @@ const UsersPage = () => {
     const [users, setUsers] = useState<any>([]);
     const [filterName, setFilterName] = useState('');
     const layoutQuery: Breakpoint = 'lg';
-    const networkId = LocalStorage.getNetworkId();
+    const networkId = getNetworkId();
 
     const fetchNetwork = async () => {
         try {
