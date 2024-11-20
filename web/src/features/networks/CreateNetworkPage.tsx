@@ -119,7 +119,7 @@ export const CreateNetworkPage = () => {
                 </Typography>
             </Box>
             <Button type="submit" variant="contained" color="primary" fullWidth>
-                Create Group
+                Opret forespørgsel
             </Button>
         </Box>
     );
