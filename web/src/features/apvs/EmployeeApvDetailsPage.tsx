@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {Box, Breadcrumbs, CircularProgress, Link, Paper, Stack, Table, TableBody, TableContainer, Typography} from '@mui/material';
 import {useTable} from '../users/UsersPage';
-import {EmployeeApvModel} from '../../firebase/models/EmployeeApvModel';
+import {EmployeeApvModel, Question} from '../../firebase/models/EmployeeApvModel';
 import {fetchEmployeeApv} from '../../firebase/ApvQueries';
 import {Scrollbar} from '../../components/Scrollbar';
 import {TableEmptyRows, UserTableRow} from '../users/components/table/UsersTable';
@@ -53,6 +53,19 @@ export const EmployeeApvDetailsPage = () => {
                 </Stack>
             </Paper>
             <Paper variant="outlined" sx={{p: 2, mb: 3}}>
+                <Typography variant="h6">Spørgsmål</Typography>
+                <Scrollbar sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                    <Stack component="ul">
+                        {apv.questions?.map((question: Question, index: number) => (
+                            <Box key={index} component="li" sx={{p: 1}}>
+                                <Typography variant="subtitle1">{question.title}</Typography>
+                                <Typography variant="body2">{question.description}</Typography>
+                            </Box>
+                        ))}
+                    </Stack>
+                </Scrollbar>
+            </Paper>
+            <Paper variant="outlined" sx={{p: 2, mb: 3}}>
                 <Typography variant="h6">Deltagere</Typography>
                 <Scrollbar>
                     <TableContainer sx={{overflow: 'unset', marginY: 2}}>
@@ -92,35 +105,6 @@ export const EmployeeApvDetailsPage = () => {
                         </Table>
                     </TableContainer>
                 </Scrollbar>
-            </Paper>
-
-            <Paper variant="outlined" sx={{p: 2, mb: 3}}>
-                <Typography variant="h6">Sundhed og sikkerhed</Typography>
-                <Stack component="ul">
-                    {/*{apv.healthSafety?.map((item: HealthSafetyModel, index: number) => (*/}
-                    {/*    <Box key={index} component="li" sx={{p: 1}}>*/}
-                    {/*        <Typography variant="subtitle1">{item.title}</Typography>*/}
-                    {/*        <Typography variant="body2">{item.description}</Typography>*/}
-                    {/*    </Box>*/}
-                    {/*))}*/}
-                </Stack>
-            </Paper>
-
-            <Paper variant="outlined" sx={{p: 2, mb: 3}}>
-                <Typography variant="h6">Evaluering og opfølgning</Typography>
-                <Stack component="ul">
-                    {/*{apv.evaluation?.map((item: EvaluationModel, index: number) => (*/}
-                    {/*    <Box key={index} component="li" sx={{p: 1}}>*/}
-                    {/*        <Typography variant="subtitle1">{item.title}</Typography>*/}
-                    {/*        <Typography variant="body2">{item.description}</Typography>*/}
-                    {/*    </Box>*/}
-                    {/*))}*/}
-                </Stack>
-            </Paper>
-
-            <Paper variant="outlined" sx={{p: 2, mb: 3}}>
-                <Typography variant="h6">Konklusion</Typography>
-                {/*<Typography variant="body1">{apv.conclusion}</Typography>*/}
             </Paper>
         </Box>
     );
