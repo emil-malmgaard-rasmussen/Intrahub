@@ -31,7 +31,7 @@ export function AnalyticsConversionRates({title, subheader, chart, ...other}: Pr
     const theme = useTheme();
     const [chartData, setChartData] = useState<{ categories: string[]; series: any[] } | null>(null);
     const [loading, setLoading] = useState(true);
-    const [selectedApv, setSelectedApv] = useState<string>('RAUmCs9lvlPjhszpVk9G');
+    const [selectedApv, setSelectedApv] = useState<string>('');
     const [apvs, setApvs] = useState<EmployeeApvModel[]>([]);
 
     const apvTypeTranslations = {
@@ -48,6 +48,11 @@ export function AnalyticsConversionRates({title, subheader, chart, ...other}: Pr
         }
 
         fetchApvs().then(d => {
+            if(d.length <= 0) {
+                setApvs([])
+                setLoading(false);
+                return;
+            }
             if(!selectedApv) {
                 setSelectedApv(d.filter(d => d.apvType === 'employeeApv')[0].id)
             }
