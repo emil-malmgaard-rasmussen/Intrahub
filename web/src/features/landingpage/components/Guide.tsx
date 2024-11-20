@@ -1,6 +1,5 @@
 import { Box, Typography, styled } from "@mui/material";
 import CustomButton from "../../../components/CustomButton";
-import { ArrowRightAlt } from "@mui/icons-material";
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import DomainAddOutlinedIcon from '@mui/icons-material/DomainAddOutlined';
 import QueueOutlinedIcon from '@mui/icons-material/QueueOutlined';

@@ -9,27 +9,27 @@ const CustomContainer = styled(Container)(({theme}) => ({
         textAlign: "center",
     },
 }));
-
-const IconBox = styled(Box)(({theme}) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: "1rem",
-    [theme.breakpoints.down("sm")]: {
-        justifyContent: "center",
-    },
-}));
-
-const FooterLink = styled("a")(({ theme }) => ({
-    fontSize: "16px",
-    color: "#FFFFFF",
-    fontWeight: "300",
-    cursor: "pointer",
-    textDecoration: "none",
-    "&:hover": {
-        color: "#FFF",
-        textDecoration: "underline",
-    },
-}));
+//
+// const IconBox = styled(Box)(({theme}) => ({
+//     display: "flex",
+//     alignItems: "center",
+//     gap: "1rem",
+//     [theme.breakpoints.down("sm")]: {
+//         justifyContent: "center",
+//     },
+// }));
+//
+// const FooterLink = styled("a")(({ theme }) => ({
+//     fontSize: "16px",
+//     color: "#FFFFFF",
+//     fontWeight: "300",
+//     cursor: "pointer",
+//     textDecoration: "none",
+//     "&:hover": {
+//         color: "#FFF",
+//         textDecoration: "underline",
+//     },
+// }));
 
 export default function Footer() {
     return (

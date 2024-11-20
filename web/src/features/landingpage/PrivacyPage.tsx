@@ -1,4 +1,3 @@
-import Hero from "./components/Hero";
 import Guide from './components/Guide'
 import MoreDetail from "./components/MoreDetail";
 import Featured from "./components/Featured";
