@@ -64,13 +64,7 @@ const OverviewScreen = ({navigation}) => {
     const activities = networksSnapshot.docs.map(doc => doc.data());
 
     const marked = activities.reduce((acc, activity) => {
-      let activityDate;
-
-      if (activity.date.toDate) {
-        activityDate = moment(activity.date.toDate()).format('YYYY-MM-DD');
-      } else {
-        activityDate = moment(activity.date).format('YYYY-MM-DD');
-      }
+      const activityDate = moment(activity.dateFrom.toDate()).format('YYYY-MM-DD');
 
       if (!acc[activityDate]) {
         acc[activityDate] = {

@@ -29,8 +29,10 @@ const ApvDetailScreen = ({route, navigation}) => {
   const [displaySuccessAlert, setDisplaySuccessAlert] = useState(false);
 
   const onSubmit = async (data: any) => {
+    console.log(data);
     try {
-      data.createdBy = currentUser?.displayName || 'Anonymous';
+      data.createdBy = currentUser?.displayName;
+      data.createdByUid = currentUser?.uid;
       data.createdAt = firestore.FieldValue.serverTimestamp();
       data.apvId = apv.id;
 
@@ -54,7 +56,7 @@ const ApvDetailScreen = ({route, navigation}) => {
       <SuccessAlert
         visible={displaySuccessAlert}
         navigateBack={() => navigation.goBack()}
-        text={'APV besvaretg'}
+        text={'APV besvaret'}
       />
       <ScreenHeader
         title={''}
@@ -110,10 +112,10 @@ const ApvDetailScreen = ({route, navigation}) => {
                       <YesOrNoComponent questionIndex={index} />
                     </View>
                   </View>
-                  {methods.watch(`answers.${index}.answer`) === 'true' && (
+                  {methods.watch(`answers.${index}.answer`) === true && (
                     <View style={{marginTop: 10}}>
                       <Controller
-                        name={`answers.${index}.comments`}
+                        name={`answers.${index}.comment`}
                         defaultValue=""
                         render={({field: {onChange, onBlur, value}}) => (
                           <TextInput
@@ -129,12 +131,14 @@ const ApvDetailScreen = ({route, navigation}) => {
                   )}
                   <Controller
                     name={`answers.${index}.answer`}
-                    render={({fieldState: {error}}) => (
+                    rules={{
+                      validate: (value) =>
+                        value !== undefined || 'Udfyld venligst', // Ensure value is either true or false
+                    }}
+                    render={({ fieldState: { error } }) => (
                       <>
                         {error && (
-                          <Text style={themeStyles.errorText}>
-                            {error.message}
-                          </Text>
+                          <Text style={themeStyles.errorText}>{error.message}</Text>
                         )}
                       </>
                     )}

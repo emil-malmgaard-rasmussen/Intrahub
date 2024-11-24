@@ -1,7 +1,9 @@
-import {collection, doc, getDoc, getDocs, query, Timestamp, where} from 'firebase/firestore';
+import {collection, doc, getDoc, getDocs, limit, orderBy, query, Timestamp, where} from 'firebase/firestore';
 import {db} from '../Firebase';
-import {getNetworkId} from  '../utils/LocalStorage';
-import { EmployeeApvModel } from './models/EmployeeApvModel';
+import {getNetworkId} from '../utils/LocalStorage';
+import {EmployeeApvModel} from './models/EmployeeApvModel';
+import {ProjectApvModel} from './models/ProjectApvModel';
+import {Answer, ApvAnswer} from './models/ApvAnswerModel';
 
 
 export async function fetchApvs(): Promise<EmployeeApvModel[]> {
@@ -28,7 +30,6 @@ export async function fetchApvs(): Promise<EmployeeApvModel[]> {
 
 export const fetchEmployeeApv = async (apvId: string): Promise<EmployeeApvModel | null> => {
     try {
-        console.log(apvId)
         const apvRef = doc(db, "APV", apvId);
         const apvSnapshot = await getDoc(apvRef);
 
@@ -45,6 +46,69 @@ export const fetchEmployeeApv = async (apvId: string): Promise<EmployeeApvModel 
     } catch (error) {
         console.error("Error fetching the APV:", error);
         return null;
+    }
+};
+
+export const fetchApv = async (apvId: string): Promise<EmployeeApvModel | ProjectApvModel | null> => {
+    try {
+        const apvRef = doc(db, "APV", apvId);
+        const apvSnapshot = await getDoc(apvRef);
+
+        if (apvSnapshot.exists()) {
+            const data = apvSnapshot.data();
+            if (data.apvType === 'employeeType') {
+                return {
+                    id: apvSnapshot.id,
+                    ...data,
+                } as EmployeeApvModel;
+            } else {
+                return {
+                    id: apvSnapshot.id,
+                    ...data,
+                } as ProjectApvModel;
+            }
+        } else {
+            console.warn(`APV with ID ${apvId} not found.`);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching the APV:", error);
+        return null;
+    }
+};
+
+export const fetchApvAnswers = async (
+    apvId: string,
+    participantUid: string
+): Promise<ApvAnswer | null> => {
+    try {
+        const answersQuery = query(
+            collection(db, 'APV', apvId, 'answers'),
+            where('createdByUid', '==', participantUid),
+            orderBy('createdAt', 'desc'),
+            limit(1)
+        );
+
+        const answersSnapshot = await getDocs(answersQuery);
+
+        if (!answersSnapshot.empty) {
+            const doc = answersSnapshot.docs[0];
+            const data = doc.data();
+
+            return {
+                apvId,
+                createdAt: data.createdAt as Timestamp,
+                createdBy: data.createdBy as string,
+                createdByUid: data.createdByUid as string,
+                answers: data.answers as Answer[],
+            };
+        } else {
+            console.log('No answers found for the given participant.');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching APV answers:', error);
+        throw error;
     }
 };
 

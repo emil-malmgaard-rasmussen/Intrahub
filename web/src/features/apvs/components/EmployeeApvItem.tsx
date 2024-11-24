@@ -39,7 +39,7 @@ export const EmployeeApvItem = ({apv}: { apv: EmployeeApvModel }) => {
     );
 
     return (
-        <RouterLink to={`/apvs/employee/${apv.id}`} style={{textDecoration: 'none'}}>
+        <RouterLink to={`/apvs/${apv.id}`} style={{textDecoration: 'none'}}>
             <Card>
                 <Box sx={{pt: '100%', position: 'relative'}}>
                     {renderProject}

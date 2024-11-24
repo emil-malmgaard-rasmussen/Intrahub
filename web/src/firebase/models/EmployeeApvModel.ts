@@ -6,7 +6,7 @@ export type Participant = {
 export type Question = {
     description: string;
     title: string;
-    type: string; // You could make this more specific if there are only specific types
+    type: string;
 };
 
 export type EmployeeApvModel = {

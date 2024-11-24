@@ -8,16 +8,17 @@ import ProjectsPage from '../features/projects/ProjectsPage';
 import UsersPage from '../features/users/UsersPage';
 import PostsPage from '../features/posts/PostsPage';
 import ApvListPage from '../features/apvs/ApvListPage';
-import { ProjectApvDetailsPage } from '../features/apvs/ProjectApvDetailsPage';
 import LandingPage from '../features/landingpage/index';
 import EditNetworkPage from '../features/networks/EditNetworkPage';
-import { EmployeeApvDetailsPage } from '../features/apvs/EmployeeApvDetailsPage';
 import { getNetworkId, setNetworkId } from '../utils/LocalStorage';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../Firebase';
 import PrivacyPage from '../features/landingpage/PrivacyPage';
 import Register from '../features/auth/Register';
 import {CreateNetworkPage} from '../features/networks/CreateNetworkPage';
+import {ApvDetailsPage} from '../features/apvs/ApvDetailsPage';
+import {EmployeeApvAnswerDetailsPage} from '../features/apvs/EmployeeApvAnswerDetailsPage';
+import ActivitiesListPage from '../features/activities/ActivitiesListPage';
 
 const ProtectedRoutes = () => {
     const { user } = useAuth();
@@ -93,11 +94,12 @@ const ProtectedRoutes = () => {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="/activities" element={<ActivitiesListPage />} />
                 <Route path="/posts" element={<PostsPage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/apvs" element={<ApvListPage />} />
-                <Route path="/apvs/project/:id" element={<ProjectApvDetailsPage />} />
-                <Route path="/apvs/employee/:id" element={<EmployeeApvDetailsPage />} />
+                <Route path="/apvs/:id" element={<ApvDetailsPage />} />
+                <Route path="/apvs/:id/employee/:uid/answers" element={<EmployeeApvAnswerDetailsPage />} />
                 <Route path="/organization/settings" element={<EditNetworkPage />} />
             </Route>
         </Routes>

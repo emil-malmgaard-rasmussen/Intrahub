@@ -11,8 +11,11 @@ import SuccessAlert from '../../../../components/SuccessAlert.tsx';
 
 const CreateNetworkActivities = ({networkId, close}) => {
   const [uploading, setUploading] = useState(false);
-  const [date, setDate] = useState(new Date());
+  const [fromDate, setFromDate] = useState<Date | undefined>(undefined); // Set initial state to undefined
+  const [toDate, setToDate] = useState<Date | undefined>(undefined); // Set initial state to undefined
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [datePickerMode, setDatePickerMode] = useState<'from' | 'to'>('from'); // Track which date picker is visible
+  const {currentUser} = auth();
   const {triggerRefresh} = useRefreshContext();
   const {colors} = useThemeContext();
   const [displaySuccessAlert, setDisplaySuccessAlert] = useState(false);
@@ -41,9 +44,12 @@ const CreateNetworkActivities = ({networkId, close}) => {
       .add({
         title: data.title,
         description: data.description,
-        date: firestore.Timestamp.fromDate(date),
+        dateFrom: fromDate ? firestore.Timestamp.fromDate(fromDate) : undefined, // Handle undefined state
+        dateTo: toDate ? firestore.Timestamp.fromDate(toDate) : undefined, // Handle undefined state
         uid,
         networkId,
+        createdByUid: uid,
+        createdByName: user.displayName,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
@@ -56,7 +62,8 @@ const CreateNetworkActivities = ({networkId, close}) => {
       .finally(() => {
         setUploading(false);
         reset();
-        setDate(new Date());
+        setFromDate(undefined); // Reset to undefined after submission
+        setToDate(undefined); // Reset to undefined after submission
       });
   };
 
@@ -64,7 +71,8 @@ const CreateNetworkActivities = ({networkId, close}) => {
     reset();
   }, [reset, uploading]);
 
-  const showDatePicker = () => {
+  const showDatePicker = (mode: 'from' | 'to') => {
+    setDatePickerMode(mode);
     setDatePickerVisibility(true);
   };
 
@@ -72,8 +80,12 @@ const CreateNetworkActivities = ({networkId, close}) => {
     setDatePickerVisibility(false);
   };
 
-  const handleConfirm = selectedDate => {
-    setDate(selectedDate);
+  const handleConfirm = (selectedDate: Date) => {
+    if (datePickerMode === 'from') {
+      setFromDate(selectedDate);
+    } else if (datePickerMode === 'to') {
+      setToDate(selectedDate);
+    }
     hideDatePicker();
   };
 
@@ -99,6 +111,7 @@ const CreateNetworkActivities = ({networkId, close}) => {
         )}
       />
       {errors.title && <Text style={styles.errorText}>Title is required.</Text>}
+
       <Controller
         name="description"
         control={control}
@@ -118,19 +131,35 @@ const CreateNetworkActivities = ({networkId, close}) => {
       {errors.description && (
         <Text style={styles.errorText}>Description is required.</Text>
       )}
+
+      {/* From Date Picker */}
       <TouchableOpacity
-        onPress={showDatePicker}
+        onPress={() => showDatePicker('from')}
         style={styles.datePickerButton}>
         <Text style={styles.datePickerText}>
-          {`Dato for aktivitet: ${date.toLocaleDateString()}`}
+          {fromDate
+            ? `Fra d.: ${fromDate.toLocaleDateString()}`
+            : 'Vælg startdato'}
         </Text>
       </TouchableOpacity>
+
+      {/* To Date Picker */}
+      <TouchableOpacity
+        onPress={() => showDatePicker('to')}
+        style={styles.datePickerButton}>
+        <Text style={styles.datePickerText}>
+          {toDate ? `Til d.: ${toDate.toLocaleDateString()}` : 'Vælg slutdato'}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Date Picker Modal */}
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
+
       <CustomButton
         onPress={handleSubmit(onSubmit)}
         disabled={uploading}

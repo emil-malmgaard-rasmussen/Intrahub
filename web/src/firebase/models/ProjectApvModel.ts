@@ -27,4 +27,5 @@ export type ProjectApvModel = {
     healthSafety: HealthSafetyModel[];
     evaluation: EvaluationModel[];
     conclusion: string;
+    apvType: 'employeeApv' | 'projectApv';
 };

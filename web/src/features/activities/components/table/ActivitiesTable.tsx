@@ -1,4 +1,5 @@
 import {
+    CircularProgress,
     OutlinedInput,
     TableCell,
     TableHead,
@@ -19,57 +20,26 @@ import Popover from '@mui/material/Popover';
 import MenuList from '@mui/material/MenuList';
 import MenuItem, {menuItemClasses} from '@mui/material/MenuItem';
 import {visuallyHidden} from './utils';
-import {useNavigate, useParams} from 'react-router-dom';
+import {ActivityModel} from '../../../../firebase/models/ActivityModel';
+import {deleteActivity} from '../../../../firebase/ActivityQueries';
 
-type TableEmptyRowsProps = TableRowProps & {
-    emptyRows: number;
-    height?: number;
-};
-
-export const TableEmptyRows = ({emptyRows, height, sx, ...other}: TableEmptyRowsProps) => {
-    if (!emptyRows) {
-        return null;
-    }
-
-    return (
-        <TableRow
-            sx={{
-                ...(height && {
-                    height: height * emptyRows,
-                }),
-                ...sx,
-            }}
-            {...other}
-        >
-            <TableCell colSpan={9}/>
-        </TableRow>
-    );
-}
-type TableNoDataProps = TableRowProps & {
+type TableLoadingDataProps = TableRowProps & {
     searchQuery: string;
 };
 
-export const TableNoData = ({searchQuery, ...other}: TableNoDataProps) => {
+export const TableLoadingData = ({searchQuery}: TableLoadingDataProps) => {
     return (
-        <TableRow {...other}>
+        <TableRow>
             <TableCell align="center" colSpan={7}>
                 <Box sx={{py: 15, textAlign: 'center'}}>
-                    <Typography variant="h6" sx={{mb: 1}}>
-                        Ikke fundet
-                    </Typography>
-
-                    <Typography variant="body2">
-                        Ingen resultater for &nbsp;
-                        <strong>&quot;{searchQuery}&quot;</strong>.
-                        <br /> Tjek for stavefejl i søgefeltet.
-                    </Typography>
+                    <CircularProgress/>
                 </Box>
             </TableCell>
         </TableRow>
     );
 }
 
-type ParticipantsTableHeadProps = {
+type ActivitiesTableHeadProps = {
     orderBy: string;
     rowCount: number;
     numSelected: number;
@@ -79,15 +49,15 @@ type ParticipantsTableHeadProps = {
     onSelectAllRows: (checked: boolean) => void;
 };
 
-export const ParticipantsTableHead = ({
-                                          order,
-                                          onSort,
-                                          orderBy,
-                                          rowCount,
-                                          headLabel,
-                                          numSelected,
-                                          onSelectAllRows,
-                                      }: ParticipantsTableHeadProps) => {
+export const ActivitiesTableHead = ({
+                                        order,
+                                        onSort,
+                                        orderBy,
+                                        rowCount,
+                                        headLabel,
+                                        numSelected,
+                                        onSelectAllRows,
+                                    }: ActivitiesTableHeadProps) => {
     return (
         <TableHead>
             <TableRow>
@@ -128,20 +98,15 @@ export const ParticipantsTableHead = ({
     );
 }
 
-export type ParticipantsProps = {
-    uid: string;
-    displayName: string;
-};
-
-type ParticipantsTableRowProps = {
-    row: ParticipantsProps;
+type ActivityTableRowProps = {
+    row: ActivityModel;
     selected: boolean;
     onSelectRow: () => void;
+    notificationState: (title: string, value: boolean) => void;
+    onEdit: (activity: ActivityModel) => void;
 };
 
-export const ParticipantTableRow = ({row, selected, onSelectRow}: ParticipantsTableRowProps) => {
-    const navigate = useNavigate();
-    const {id = ''} = useParams();
+export const ActivityTableRow = ({row, selected, onSelectRow, notificationState, onEdit}: ActivityTableRowProps) => {
     const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
     const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -152,6 +117,25 @@ export const ParticipantTableRow = ({row, selected, onSelectRow}: ParticipantsTa
         setOpenPopover(null);
     }, []);
 
+    const handleDelete = async () => {
+        handleClosePopover();
+        const confirmed = window.confirm(`Er du sikker på at du ønsker at slette: ${row.title}?`);
+        if (!confirmed) return;
+
+        try {
+            await deleteActivity(row.id);
+            notificationState('Aktiviteten er nu slettet', true);
+            console.log('Activity deleted successfully.');
+        } catch (error) {
+            console.error('Failed to delete activity:', error);
+        }
+    };
+
+    const handleEdit = async () => {
+        handleClosePopover();
+        onEdit(row);
+    }
+
     return (
         <>
             <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -159,9 +143,16 @@ export const ParticipantTableRow = ({row, selected, onSelectRow}: ParticipantsTa
                     <Checkbox disableRipple checked={selected} onChange={onSelectRow}/>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                    <Box gap={2} display="flex" alignItems="center">
-                        {row.displayName}
-                    </Box>
+                    {row.title}
+                </TableCell>
+                <TableCell component="th" scope="row">
+                    {row.description}
+                </TableCell>
+                <TableCell component="th" scope="row">
+                    {row.dateFrom.toDate().toLocaleDateString()}
+                </TableCell>
+                <TableCell component="th" scope="row">
+                    {row.dateTo && row.dateTo.toDate().toLocaleDateString()}
                 </TableCell>
                 <TableCell align="right">
                     <IconButton onClick={handleOpenPopover}>
@@ -193,17 +184,14 @@ export const ParticipantTableRow = ({row, selected, onSelectRow}: ParticipantsTa
                         },
                     }}
                 >
-                    <MenuItem onClick={() => {
-                        handleClosePopover();
-                        navigate(`/apvs/${id}/employee/${row.uid}/answers`)
-                    }}>
-                        <Iconify icon="solar:download-minimalistic-bold"/>
-                        Besvarelse
+                    <MenuItem onClick={handleEdit}>
+                        <Iconify icon="solar:pen-bold"/>
+                        Edit
                     </MenuItem>
 
-                    <MenuItem onClick={handleClosePopover} sx={{color: 'error.main'}}>
+                    <MenuItem onClick={handleDelete} sx={{color: 'error.main'}}>
                         <Iconify icon="solar:trash-bin-trash-bold"/>
-                        Slet
+                        Delete
                     </MenuItem>
                 </MenuList>
             </Popover>
@@ -217,7 +205,7 @@ type TableTableToolbarProps = {
     onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const ParticipantsTableToolbar = ({numSelected, filterName, onFilterName}: TableTableToolbarProps) => {
+export const ActivitiesTableToolbar = ({numSelected, filterName, onFilterName}: TableTableToolbarProps) => {
     return (
         <Toolbar
             sx={{
@@ -240,7 +228,7 @@ export const ParticipantsTableToolbar = ({numSelected, filterName, onFilterName}
                     fullWidth
                     value={filterName}
                     onChange={onFilterName}
-                    placeholder="Søg brugere..."
+                    placeholder="Søg projekter..."
                     startAdornment={
                         <InputAdornment position="start">
                             <Iconify width={20} icon="eva:search-fill" sx={{color: 'text.disabled'}}/>

@@ -1,78 +1,65 @@
 import React, {SyntheticEvent, useCallback, useEffect, useState} from 'react';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
-import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
-import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import {Alert, Container, Snackbar, SnackbarCloseReason} from '@mui/material';
+import {Alert, Container, Snackbar, SnackbarCloseReason, Table, TableContainer} from '@mui/material';
 import {Breakpoint, useTheme} from '@mui/material/styles';
-import {
-    ProjectTableHead,
-    ProjectTableRow,
-    ProjectTableToolbar,
-    TableEmptyRows,
-    TableLoadingData,
-    TableNoData
-} from './components/table/ProjectsTable';
-import {applyFilter, emptyRows, getComparator} from './components/table/utils';
-import {_users} from '../../_data';
 import {Iconify} from '../../components/Iconify';
-import {Scrollbar} from '../../components/Scrollbar';
-import {collection, getDocs, query, where} from 'firebase/firestore';
-import {ProjectsDrawer} from './components/ProjectsDrawer';
-import {getNetworkId} from  '../../utils/LocalStorage';
-import {db} from '../../Firebase';
+import {getNetworkId} from '../../utils/LocalStorage';
+import {fetchActivities} from '../../firebase/ActivityQueries';
+import {ActivityModel} from '../../firebase/models/ActivityModel';
+import {ActivitiesDrawer} from './components/ActivitiesDrawer';
+import {ActivitiesTableHead, ActivitiesTableToolbar, ActivityTableRow} from './components/table/ActivitiesTable';
+import { Scrollbar } from '../../components/Scrollbar';
+import TableBody from '@mui/material/TableBody';
+import {TableLoadingData} from '../projects/components/table/ProjectsTable';
+import {applyFilter, getComparator} from './components/table/utils';
+import {TableNoData} from '../users/components/table/UsersTable';
 
 const ProjectsPage = () => {
     const table = useTable();
     const theme = useTheme();
-    const [filterName, setFilterName] = useState('');
-    const [projects, setProjects] = useState<any[]>([]);
+    const [activities, setActivities] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const layoutQuery: Breakpoint = 'lg';
     const [open, setOpen] = useState(false);
-    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationState, setNotificationState] = useState<{title: string, show: boolean }>({title: '', show: false});
     const networkId = getNetworkId();
+    const [selectedActivity, setSelectedActivity] = useState<ActivityModel | undefined>();
+    const [filterTitle, setFilterTitle] = useState('');
 
     const handleNotificationClose = (event?: SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
         if (reason === 'clickaway') return;
-        setNotificationOpen(false);
+        setNotificationState({title: '', show: false});
     };
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            setLoading(true);
-            try {
-                const projectsRef = collection(db, 'PROJECTS');
-                const q = query(projectsRef, where('networkId', '==', networkId));
-                const querySnapshot = await getDocs(q);
+        setSelectedActivity(undefined);
 
-                const fetchedProjects = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-
-                setProjects(fetchedProjects);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProjects();
-    }, [notificationOpen, networkId]);
+        fetchActivities().then((d: ActivityModel[]) => {
+            setActivities(d);
+            setLoading(false);
+        })
+    }, [notificationState, networkId]);
 
     const dataFiltered = applyFilter({
-        inputData: projects,
+        inputData: activities,
         comparator: getComparator(table.order, table.orderBy),
-        filterName,
+        filterTitle,
     });
 
+    const handleEditActivity = (activity: ActivityModel) => {
+        setSelectedActivity(activity);
+        setOpen(true);
+    };
 
-    const notFound = !dataFiltered.length && !!filterName;
+    const handleNotification = (title: string, value: boolean) => {
+        setNotificationState({ title, show: value });
+    };
+
+    const notFound = !dataFiltered.length && !!filterTitle;
 
     return (
         <Container
@@ -91,7 +78,7 @@ const ProjectsPage = () => {
         >
             <Box display="flex" alignItems="center" mb={5}>
                 <Typography variant="h4" flexGrow={1}>
-                    Projekter
+                    Aktiviteter
                 </Typography>
                 <Button
                     onClick={() => setOpen(true)}
@@ -99,16 +86,16 @@ const ProjectsPage = () => {
                     color="inherit"
                     startIcon={<Iconify icon="mingcute:add-line"/>}
                 >
-                    Nyt projekt
+                    Ny Aktivitet
                 </Button>
             </Box>
 
             <Card>
-                <ProjectTableToolbar
+                <ActivitiesTableToolbar
                     numSelected={table.selected.length}
-                    filterName={filterName}
+                    filterName={filterTitle}
                     onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setFilterName(event.target.value);
+                        setFilterTitle(event.target.value);
                         table.onResetPage();
                     }}
                 />
@@ -117,48 +104,53 @@ const ProjectsPage = () => {
                     fillContent
                     sx={{ maxHeight: '80vh', overflowY: 'auto' }}
                 >
-                    <TableContainer sx={{overflow: 'unset'}}>
-                        <Table sx={{minWidth: 800}}>
-                            <ProjectTableHead
+                    <TableContainer sx={{ overflow: 'unset' }}>
+                        <Table sx={{ minWidth: 800 }}>
+                            <ActivitiesTableHead
                                 order={table.order}
                                 orderBy={table.orderBy}
-                                rowCount={_users.length}
+                                rowCount={activities.length}
                                 numSelected={table.selected.length}
                                 onSort={table.onSort}
                                 onSelectAllRows={(checked) =>
                                     table.onSelectAllRows(
                                         checked,
-                                        _users.map((user) => user.id)
+                                        activities.map((activity) => activity.id)
                                     )
                                 }
                                 headLabel={[
-                                    {id: 'name', label: 'Name'},
-                                    // {id: 'company', label: 'Company'},
-                                    // {id: 'role', label: 'Role'},
-                                    // {id: 'isVerified', label: 'Verified', align: 'center'},
-                                    {id: 'status', label: 'Status'},
-                                    {id: ''},
+                                    { id: 'title', label: 'Titel' },
+                                    { id: 'description', label: 'Beskrivelse' },
+                                    { id: 'fromDate', label: 'Fra d.' },
+                                    { id: 'toDate', label: 'Til d.' },
+                                    { id: '' },
                                 ]}
                             />
                             <TableBody>
-                                <TableEmptyRows
-                                    height={68}
-                                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                                />
-                                {loading ? (<TableLoadingData searchQuery={filterName}/>) : (dataFiltered
-                                    .slice(
-                                        table.page * table.rowsPerPage,
-                                        table.page * table.rowsPerPage + table.rowsPerPage
-                                    )
-                                    .map((row) => (
-                                        <ProjectTableRow
-                                            key={row.id}
-                                            row={row}
-                                            selected={table.selected.includes(row.id)}
-                                            onSelectRow={() => table.onSelectRow(row.id)}
-                                        />
-                                    )))}
-                                {notFound && <TableNoData searchQuery={filterName}/>}
+                                {loading ? (
+                                    <TableLoadingData searchQuery={filterTitle} />
+                                ) : (
+                                    applyFilter({
+                                        inputData: activities,
+                                        comparator: getComparator(table.order, table.orderBy),
+                                        filterTitle: filterTitle,
+                                    })
+                                        .slice(
+                                            table.page * table.rowsPerPage,
+                                            table.page * table.rowsPerPage + table.rowsPerPage
+                                        )
+                                        .map((row: ActivityModel) => (
+                                            <ActivityTableRow
+                                                key={row.id}
+                                                row={row}
+                                                selected={table.selected.includes(row.id)}
+                                                onSelectRow={() => table.onSelectRow(row.id)}
+                                                notificationState={handleNotification}
+                                                onEdit={() => handleEditActivity(row)}
+                                            />
+                                        ))
+                                )}
+                                {notFound && <TableNoData searchQuery={filterTitle} />}
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -166,22 +158,27 @@ const ProjectsPage = () => {
                 <TablePagination
                     component="div"
                     page={table.page}
-                    count={projects.length}
+                    count={activities.length}
                     rowsPerPage={table.rowsPerPage}
                     onPageChange={table.onChangePage}
                     rowsPerPageOptions={[10, 20, 25]}
                     onRowsPerPageChange={table.onChangeRowsPerPage}
                 />
             </Card>
-            <ProjectsDrawer open={open} displayDrawer={setOpen} showNotification={setNotificationOpen}/>
+            <ActivitiesDrawer
+                open={open}
+                displayDrawer={setOpen}
+                notificationState={handleNotification}
+                selectedActivity={selectedActivity}
+            />
             <Snackbar
-                open={notificationOpen}
+                open={notificationState.show}
                 autoHideDuration={4000}
                 onClose={handleNotificationClose}
                 anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             >
                 <Alert onClose={handleNotificationClose} severity="success" variant="filled">
-                    Projektet er nu oprettet
+                    {notificationState.title}
                 </Alert>
             </Snackbar>
         </Container>
@@ -190,7 +187,7 @@ const ProjectsPage = () => {
 
 const useTable = () => {
     const [page, setPage] = useState(0);
-    const [orderBy, setOrderBy] = useState('name');
+    const [orderBy, setOrderBy] = useState('title');
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [selected, setSelected] = useState<string[]>([]);
     const [order, setOrder] = useState<'asc' | 'desc'>('asc');

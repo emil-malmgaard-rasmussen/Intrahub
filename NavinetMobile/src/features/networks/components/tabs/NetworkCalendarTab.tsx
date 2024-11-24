@@ -11,35 +11,75 @@ const NetworkCalendarTab = ({networkId}: {networkId: string}) => {
   const [activities, setActivities] = useState<any[]>([]);
   const {refresh} = useRefreshContext();
 
+  // Helper function to mark the period (fromDate to toDate)
+  const markActivityPeriod = (fromDate: string, toDate?: string) => {
+    let marked = {};
+
+    if (toDate) {
+      // If both fromDate and toDate are provided, mark the period
+      marked = {
+        ...marked,
+        [fromDate]: {
+          marked: true,
+          dotColor: '#0aada8', // Starting dot color
+        },
+        [toDate]: {
+          marked: true,
+          dotColor: '#0aada8', // Ending dot color
+        },
+      };
+
+      // Mark all dates in between as part of the activity period
+      let currentDate = moment(fromDate);
+      while (currentDate.isBefore(moment(toDate).add(1, 'day'))) {
+        const dateString = currentDate.format('YYYY-MM-DD');
+        if (!marked[dateString]) {
+          marked[dateString] = {
+            marked: true,
+            color: '#0aada8', // Color for the range of dates
+            selectedColor: '#0aada8', // Color to indicate selection
+          };
+        }
+        currentDate.add(1, 'day');
+      }
+    } else {
+      // If toDate is not provided, only mark the single date
+      marked[fromDate] = {
+        marked: true,
+        dotColor: '#0aada8',
+      };
+    }
+
+    return marked;
+  };
+
   const getNetworkActivities = async () => {
     const networksSnapshot = await firestore()
       .collection('ACTIVITIES')
       .where('networkId', '==', networkId)
       .get();
 
-    const activities = networksSnapshot.docs.map(doc => doc.data());
+    const activitiesSnapshot = networksSnapshot.docs.map(doc => doc.data());
 
-    const marked = activities.reduce((acc, activity) => {
-      let activityDate;
+    const marked = activitiesSnapshot.reduce((acc, activity) => {
+      const fromDate = moment(activity.dateFrom.toDate()).format('YYYY-MM-DD');
+      const toDate = activity.dateTo ? moment(activity.dateTo.toDate()).format('YYYY-MM-DD') : undefined;
 
-      if (activity.date.toDate) {
-        activityDate = moment(activity.date.toDate()).format('YYYY-MM-DD');
-      } else {
-        activityDate = moment(activity.date).format('YYYY-MM-DD');
-      }
+      const activityPeriod = markActivityPeriod(fromDate, toDate);
 
-      if (!acc[activityDate]) {
-        acc[activityDate] = {
-          marked: true,
-          selected: false,
-          selectedColor: '#0aada8',
-          activities: [],
-        };
-      }
+      acc = { ...acc, ...activityPeriod };
 
-      acc[activityDate].activities.push({
-        title: activity.title,
-        description: activity.description,
+      // Store activities in each marked date
+      Object.keys(activityPeriod).forEach(date => {
+        if (!acc[date]) {
+          acc[date] = {
+            activities: [],
+          };
+        }
+        acc[date].activities = [...(acc[date].activities || []), {
+          title: activity.title,
+          description: activity.description,
+        }];
       });
 
       return acc;
