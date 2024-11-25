@@ -21,6 +21,9 @@ import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
 import MenuList from '@mui/material/MenuList';
 import MenuItem, {menuItemClasses} from '@mui/material/MenuItem';
+import {deleteActivity} from '../../../../firebase/ActivityQueries';
+import {ActivityModel} from '../../../../firebase/models/ActivityModel';
+import {deleteProject} from '../../../../firebase/ProjectQueries';
 
 type TableEmptyRowsProps = TableRowProps & {
     emptyRows: number;
@@ -58,11 +61,10 @@ export const TableNoData = ({searchQuery, ...other}: TableNoDataProps) => {
                     <Typography variant="h6" sx={{mb: 1}}>
                         Ikke fundet
                     </Typography>
-
                     <Typography variant="body2">
                         Ingen resultater for &nbsp;
                         <strong>&quot;{searchQuery}&quot;</strong>.
-                        <br /> Tjek for stavefejl i søgefeltet.
+                        <br/> Tjek for stavefejl i søgefeltet.
                     </Typography>
                 </Box>
             </TableCell>
@@ -155,9 +157,10 @@ type ProjectTableRowProps = {
     row: ProjectProps;
     selected: boolean;
     onSelectRow: () => void;
+    notificationState: (title: string, value: boolean) => void;
 };
 
-export const ProjectTableRow = ({row, selected, onSelectRow}: ProjectTableRowProps) => {
+export const ProjectTableRow = ({row, selected, onSelectRow, notificationState}: ProjectTableRowProps) => {
     const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
     const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -167,6 +170,20 @@ export const ProjectTableRow = ({row, selected, onSelectRow}: ProjectTableRowPro
     const handleClosePopover = useCallback(() => {
         setOpenPopover(null);
     }, []);
+
+    const handleDelete = async () => {
+        handleClosePopover();
+        const confirmed = window.confirm(`Er du sikker på at du ønsker at slette: ${row.name}?`);
+        if (!confirmed) return;
+
+        try {
+            await deleteProject(row.id);
+            notificationState('Projektet er nu slettet', true);
+            console.log('Activity deleted successfully.');
+        } catch (error) {
+            console.error('Failed to delete activity:', error);
+        }
+    };
 
     return (
         <>
@@ -217,7 +234,7 @@ export const ProjectTableRow = ({row, selected, onSelectRow}: ProjectTableRowPro
                         Edit
                     </MenuItem>
 
-                    <MenuItem onClick={handleClosePopover} sx={{color: 'error.main'}}>
+                    <MenuItem onClick={handleDelete} sx={{color: 'error.main'}}>
                         <Iconify icon="solar:trash-bin-trash-bold"/>
                         Delete
                     </MenuItem>

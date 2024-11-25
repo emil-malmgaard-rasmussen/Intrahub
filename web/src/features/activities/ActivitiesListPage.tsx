@@ -55,7 +55,7 @@ const ProjectsPage = () => {
         setOpen(true);
     };
 
-    const handleNotification = (title: string, value: boolean) => {
+    const handleNotificationChange = (title: string, value: boolean) => {
         setNotificationState({ title, show: value });
     };
 
@@ -145,7 +145,7 @@ const ProjectsPage = () => {
                                                 row={row}
                                                 selected={table.selected.includes(row.id)}
                                                 onSelectRow={() => table.onSelectRow(row.id)}
-                                                notificationState={handleNotification}
+                                                setNotificationState={handleNotificationChange}
                                                 onEdit={() => handleEditActivity(row)}
                                             />
                                         ))
@@ -168,7 +168,7 @@ const ProjectsPage = () => {
             <ActivitiesDrawer
                 open={open}
                 displayDrawer={setOpen}
-                notificationState={handleNotification}
+                setNotificationsState={handleNotificationChange}
                 selectedActivity={selectedActivity}
             />
             <Snackbar

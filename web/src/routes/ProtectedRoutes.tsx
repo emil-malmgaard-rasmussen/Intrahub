@@ -24,7 +24,7 @@ const ProtectedRoutes = () => {
     const { user } = useAuth();
     const networkId = getNetworkId();
     const [localNetworkId, setLocalNetworkId] = useState<string | null>(networkId);
-    const [loading, setLoading] = useState(true); // Tracks network fetching state
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const handleStorageChange = () => {

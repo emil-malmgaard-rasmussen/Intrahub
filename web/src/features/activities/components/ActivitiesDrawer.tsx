@@ -14,12 +14,12 @@ import {editActivity} from '../../../firebase/ActivityQueries';
 export interface ProjectsDrawerProps {
     open: boolean;
     displayDrawer: (value: boolean) => void;
-    notificationState: (title: string, value: boolean) => void;
+    setNotificationsState: (title: string, value: boolean) => void;
     selectedActivity?: ActivityModel;
 }
 
 export const ActivitiesDrawer = (props: ProjectsDrawerProps) => {
-    const {open, displayDrawer, notificationState, selectedActivity} = props;
+    const {open, displayDrawer, setNotificationsState, selectedActivity} = props;
     const {register, handleSubmit, reset} = useForm();
     const [uploading, setUploading] = useState<boolean>(false);
     const networkId = getNetworkId();
@@ -55,7 +55,7 @@ export const ActivitiesDrawer = (props: ProjectsDrawerProps) => {
         try {
             if (selectedActivity) {
                 await editActivity(selectedActivity.id, activityData);
-                notificationState('Aktiviteten er nu opdateret', true);
+                setNotificationsState('Aktiviteten er nu opdateret', true);
             } else {
                 const newActivityData = {
                     ...activityData,
@@ -65,7 +65,7 @@ export const ActivitiesDrawer = (props: ProjectsDrawerProps) => {
                     networkId,
                 };
                 await addDoc(collection(db, 'ACTIVITIES'), newActivityData);
-                notificationState('Aktiviteten er nu oprettet', true);
+                setNotificationsState('Aktiviteten er nu oprettet', true);
                 reset();
             }
         } catch (error) {

@@ -41,7 +41,7 @@ const ProjectApvType = (props: ProjectApvTypeProps) => {
     const [projects, setProjects] = useState<any[]>([]);
     const [open, setOpen] = useState(false);
     const networkId = getNetworkId();
-    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationState, setNotificationState] = useState<{title: string, show: boolean }>({title: '', show: false});
 
     const methods = useForm({
         defaultValues: {
@@ -59,7 +59,11 @@ const ProjectApvType = (props: ProjectApvTypeProps) => {
 
     const handleNotificationClose = (event?: SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
         if (reason === 'clickaway') return;
-        setNotificationOpen(false);
+        setNotificationState({title: '', show: false});
+    };
+
+    const handleNotificationChange = (title: string, value: boolean) => {
+        setNotificationState({ title, show: value });
     };
 
     useEffect(() => {
@@ -82,7 +86,7 @@ const ProjectApvType = (props: ProjectApvTypeProps) => {
         };
 
         fetchProjects();
-    }, [networkId, notificationOpen]);
+    }, [networkId, notificationState]);
 
     const {register, handleSubmit, reset, control} = methods;
 
@@ -266,15 +270,19 @@ const ProjectApvType = (props: ProjectApvTypeProps) => {
                         {creating ? <CircularProgress color={'inherit'}/> : 'Opret APV'}
                     </Button>
                 </Grid>
-                <ProjectsDrawer open={open} displayDrawer={setOpen} showNotification={setNotificationOpen}/>
+                <ProjectsDrawer
+                    open={open}
+                    displayDrawer={setOpen}
+                    setNotificationState={handleNotificationChange}
+                />
                 <Snackbar
-                    open={notificationOpen}
+                    open={notificationState.show}
                     autoHideDuration={4000}
                     onClose={handleNotificationClose}
                     anchorOrigin={{vertical: 'top', horizontal: 'center'}}
                 >
                     <Alert onClose={handleNotificationClose} severity="success" variant="filled">
-                        Projektet er nu oprettet
+                        {notificationState.title}
                     </Alert>
                 </Snackbar>
             </form>

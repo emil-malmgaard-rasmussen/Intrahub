@@ -79,7 +79,7 @@ android {
 
     namespace "com.navinetmobile"
     defaultConfig {
-        applicationId "com.navinetmobile"
+        applicationId "dk.intrahub"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

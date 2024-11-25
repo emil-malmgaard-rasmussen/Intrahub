@@ -1,4 +1,4 @@
-package com.navinetmobile
+package dk.intrahub
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

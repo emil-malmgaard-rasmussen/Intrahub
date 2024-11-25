@@ -60,7 +60,6 @@ export async function deleteActivity(activityId: string): Promise<void> {
     try {
         const docRef = doc(db, "ACTIVITIES", activityId);
         await deleteDoc(docRef);
-        console.log(`Activity ${activityId} deleted successfully.`);
     } catch (error) {
         console.error(`Error deleting activity ${activityId}:`, error);
         throw new Error("Failed to delete activity.");

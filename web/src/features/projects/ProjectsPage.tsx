@@ -35,12 +35,16 @@ const ProjectsPage = () => {
     const [loading, setLoading] = useState(true);
     const layoutQuery: Breakpoint = 'lg';
     const [open, setOpen] = useState(false);
-    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationState, setNotificationState] = useState<{title: string, show: boolean }>({title: '', show: false});
     const networkId = getNetworkId();
 
     const handleNotificationClose = (event?: SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
         if (reason === 'clickaway') return;
-        setNotificationOpen(false);
+        setNotificationState({title: '', show: false});
+    };
+
+    const handleNotificationChange = (title: string, value: boolean) => {
+        setNotificationState({ title, show: value });
     };
 
     useEffect(() => {
@@ -63,7 +67,7 @@ const ProjectsPage = () => {
         };
 
         fetchProjects();
-    }, [notificationOpen, networkId]);
+    }, [notificationState, networkId]);
 
     const dataFiltered = applyFilter({
         inputData: projects,
@@ -156,6 +160,7 @@ const ProjectsPage = () => {
                                             row={row}
                                             selected={table.selected.includes(row.id)}
                                             onSelectRow={() => table.onSelectRow(row.id)}
+                                            notificationState={handleNotificationChange}
                                         />
                                     )))}
                                 {notFound && <TableNoData searchQuery={filterName}/>}
@@ -173,15 +178,19 @@ const ProjectsPage = () => {
                     onRowsPerPageChange={table.onChangeRowsPerPage}
                 />
             </Card>
-            <ProjectsDrawer open={open} displayDrawer={setOpen} showNotification={setNotificationOpen}/>
+            <ProjectsDrawer
+                open={open}
+                displayDrawer={setOpen}
+                setNotificationState={handleNotificationChange}
+            />
             <Snackbar
-                open={notificationOpen}
+                open={notificationState.show}
                 autoHideDuration={4000}
                 onClose={handleNotificationClose}
                 anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             >
                 <Alert onClose={handleNotificationClose} severity="success" variant="filled">
-                    Projektet er nu oprettet
+                    {notificationState.title}
                 </Alert>
             </Snackbar>
         </Container>

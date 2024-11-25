@@ -102,11 +102,11 @@ type ActivityTableRowProps = {
     row: ActivityModel;
     selected: boolean;
     onSelectRow: () => void;
-    notificationState: (title: string, value: boolean) => void;
+    setNotificationState: (title: string, value: boolean) => void;
     onEdit: (activity: ActivityModel) => void;
 };
 
-export const ActivityTableRow = ({row, selected, onSelectRow, notificationState, onEdit}: ActivityTableRowProps) => {
+export const ActivityTableRow = ({row, selected, onSelectRow, setNotificationState, onEdit}: ActivityTableRowProps) => {
     const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
     const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -124,7 +124,7 @@ export const ActivityTableRow = ({row, selected, onSelectRow, notificationState,
 
         try {
             await deleteActivity(row.id);
-            notificationState('Aktiviteten er nu slettet', true);
+            setNotificationState('Aktiviteten er nu slettet', true);
             console.log('Activity deleted successfully.');
         } catch (error) {
             console.error('Failed to delete activity:', error);
