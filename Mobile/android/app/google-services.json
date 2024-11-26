@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1043445818803",
+    "project_id": "navinet-1da50",
+    "storage_bucket": "navinet-1da50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043445818803:android:2bc87f33ef99a575ed97c6",
+        "android_client_info": {
+          "package_name": "com.intrahub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwSNJsZVN_Rtg1zYJFWgzunwFUevmIiBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043445818803:android:7b700930a615590aed97c6",
+        "android_client_info": {
+          "package_name": "dk.rasmussen_solutions.intrahub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwSNJsZVN_Rtg1zYJFWgzunwFUevmIiBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
