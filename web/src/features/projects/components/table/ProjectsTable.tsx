@@ -21,8 +21,6 @@ import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
 import MenuList from '@mui/material/MenuList';
 import MenuItem, {menuItemClasses} from '@mui/material/MenuItem';
-import {deleteActivity} from '../../../../firebase/ActivityQueries';
-import {ActivityModel} from '../../../../firebase/models/ActivityModel';
 import {deleteProject} from '../../../../firebase/ProjectQueries';
 
 type TableEmptyRowsProps = TableRowProps & {
