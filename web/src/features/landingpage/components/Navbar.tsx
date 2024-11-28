@@ -126,7 +126,9 @@ export default function Navbar() {
                 >
                     <ListComponent/>
                 </Drawer>
-                <NavbarLogo src={logo} alt="logo"/>
+                <a href={'/'}>
+                    <NavbarLogo src={logo} alt="logo"/>
+                </a>
             </Box>
 
             <NavbarLinkBox>

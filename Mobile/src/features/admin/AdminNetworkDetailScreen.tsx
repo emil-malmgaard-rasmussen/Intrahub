@@ -204,6 +204,7 @@ const AdminNetworkDetailScreen = ({route, navigation}) => {
           scrollAnimationDuration={800}
           loop={false}
           pagingEnabled={true}
+          enabled={false}
           onScrollEnd={index => setActiveTabIndex(index)}
         />
       </View>
@@ -345,6 +346,7 @@ const styles = (colors: ThemeColors) =>
       borderRadius: 8,
       marginBottom: 10,
       width: '100%',
+      color: colors.text.default
     },
     headerIcon: {
       color: '#fff',

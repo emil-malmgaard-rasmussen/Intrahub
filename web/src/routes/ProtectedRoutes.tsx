@@ -87,7 +87,7 @@ const ProtectedRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPage />} />
             <Route path="/register" element={<Register />} />
             <Route path="/create/group" element={<CreateNetworkPage />} />
             <Route element={<DashboardLayout />}>

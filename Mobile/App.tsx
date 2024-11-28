@@ -1,9 +1,9 @@
 import {RecoilRoot} from 'recoil';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import {useEffect} from 'react';
+import React, {useEffect} from 'react';
 import messaging from '@react-native-firebase/messaging';
 import 'react-native-gesture-handler';
-import {Alert, StatusBar} from 'react-native';
+import {Alert, Platform, StatusBar} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {AuthProvider} from './src/auth/AuthProvider';
 import Router from './src/navigation/Router.tsx';
@@ -36,7 +36,10 @@ const App = () => {
   return (
     <RecoilRoot>
       <GestureHandlerRootView style={{flex: 1}}>
-        <StatusBar barStyle={'dark-content'} translucent={true} />
+        <StatusBar
+          barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
+          translucent={true}
+        />
         <RefreshProvider>
           <BottomSheetModalProvider>
             <AuthProvider>

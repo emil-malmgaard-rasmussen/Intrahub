@@ -20,7 +20,9 @@ const colors: Record<ColorThemeName, ThemeColors> = {
       active: 'rgb(255, 255, 255)',
     },
     icon: {
-      default: '#fff',
+      default: '#222',
+      dark: '#000',
+      light: '#fff',
       active: 'rgb(2, 133, 199)',
       muted: '#C6C6C6',
     },
@@ -59,6 +61,8 @@ const colors: Record<ColorThemeName, ThemeColors> = {
     },
     icon: {
       default: '#fff',
+      dark: '#000',
+      light: '#fff',
       active: 'rgb(2, 133, 199)',
       muted: '#C6C6C6',
     },
@@ -101,6 +105,8 @@ export type ThemeColors = {
   };
   icon: {
     default: string;
+    dark: string;
+    light: string;
     active: string;
     muted: string;
   };

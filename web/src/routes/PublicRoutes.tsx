@@ -8,9 +8,9 @@ import PrivacyPage from '../features/landingpage/PrivacyPage';
 const PublicRoutes = () => (
     <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/privacy-policy" element={<PrivacyPage />} />
     </Routes>
 );
 

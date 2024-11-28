@@ -2,8 +2,10 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Animated,
-  Image, SafeAreaView,
+  Image,
+  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -158,26 +160,33 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={themeStyles.container}>
-      <View style={themeStyles.headerContainer}>
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-          <View style={{flex: 2, alignItems: 'flex-end'}}>
-            <Image
-              style={themeStyles.profileImage}
-              source={{
-                uri: user?.profileImage
-                  ? user.profileImage
-                  : `https://ui-avatars.com/api/?name=${user?.displayName}&background=0D8ABC&color=fff&size=100`,
-              }}
-            />
-          </View>
-          <View style={{flex: 1}}>
-            <TouchableOpacity
-              onPress={() => {
-                setBottomSheetRender('edit');
-                handlePresentModalPress();
-              }}>
-              <MaterialIcons name={'edit'} color={'#FFF'} size={25} />
-            </TouchableOpacity>
+      <View
+        style={[
+          themeStyles.headerContainer,
+          {paddingTop: StatusBar.currentHeight || 10},
+        ]}>
+        <View style={[themeStyles.headerContainer, { paddingTop: StatusBar.currentHeight || 10 }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <View style={{ flex: 2, alignItems: 'flex-end' }}>
+              <Image
+                style={themeStyles.profileImage}
+                source={{
+                  uri: user?.profileImage
+                    ? user.profileImage
+                    : `https://ui-avatars.com/api/?name=${user?.displayName}&background=0D8ABC&color=fff&size=100`,
+                }}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setBottomSheetRender('edit');
+                  handlePresentModalPress();
+                }}
+              >
+                <MaterialIcons name={'edit'} color={'#FFF'} size={25} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <Text style={themeStyles.name}>{user?.displayName}</Text>
@@ -207,7 +216,8 @@ const ProfileScreen = () => {
                   <Text
                     style={[
                       themeStyles.tabButtonText,
-                      activeTabIndex === index && themeStyles.activeTabButtonText,
+                      activeTabIndex === index &&
+                        themeStyles.activeTabButtonText,
                     ]}>
                     {tab}
                   </Text>
@@ -241,6 +251,7 @@ const ProfileScreen = () => {
             scrollAnimationDuration={800}
             loop={false}
             pagingEnabled={true}
+            enabled={false}
             onScrollEnd={index => setActiveTabIndex(index)}
           />
         </View>

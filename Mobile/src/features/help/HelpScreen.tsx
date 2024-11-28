@@ -72,8 +72,8 @@ const HelpScreen = () => {
 
   const faqs = [
     { question: 'Hvordan opretter jeg en konto?', answer: 'Tryk på "Opret konto" på forsiden.' },
-    { question: 'Hvordan deler jeg et opslag?', answer: 'Gå til "Opslag" sektionen og tryk "Opret opslag."' },
-    { question: 'Hvordan får jeg adgang til dokumenter?', answer: 'Find vigtige dokumenter under "Dokumenthåndtering".' },
+    { question: 'Hvordan deler jeg et opslag?', answer: 'Gå til "Netværk", find det netværk du ønsker at oprette et nyt opslag under, tryk på "+" i højre hjørne (kræver du er administrator) og tryk herefter på "Opret opslag."' },
+    { question: 'Hvordan får jeg adgang til dokumenter?', answer: 'Find vigtige dokumenter under "Netværk" og under menupunktet: "Dokumenter". Alle dokumenter tildeles et projekt som herefter kan fremsøges.' },
     { question: 'Hvordan ændrer jeg mine profilindstillinger?', answer: 'Gå til "Profil" og tryk på "Rediger".' },
   ];
 

@@ -44,15 +44,16 @@ const CreateNetworkActivities = ({networkId, close}) => {
       .add({
         title: data.title,
         description: data.description,
-        dateFrom: fromDate ? firestore.Timestamp.fromDate(fromDate) : undefined, // Handle undefined state
-        dateTo: toDate ? firestore.Timestamp.fromDate(toDate) : undefined, // Handle undefined state
+        dateFrom: fromDate ? firestore.Timestamp.fromDate(fromDate) : null,
+        dateTo: toDate ? firestore.Timestamp.fromDate(toDate) : null,
         uid,
         networkId,
         createdByUid: uid,
-        createdByName: user.displayName,
+        createdByName: user?.displayName,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
+        console.log("CREATED")
         triggerRefresh();
         setDisplaySuccessAlert(!displaySuccessAlert);
       })
@@ -62,8 +63,8 @@ const CreateNetworkActivities = ({networkId, close}) => {
       .finally(() => {
         setUploading(false);
         reset();
-        setFromDate(undefined); // Reset to undefined after submission
-        setToDate(undefined); // Reset to undefined after submission
+        setFromDate(undefined);
+        setToDate(undefined);
       });
   };
 
@@ -131,8 +132,6 @@ const CreateNetworkActivities = ({networkId, close}) => {
       {errors.description && (
         <Text style={styles.errorText}>Description is required.</Text>
       )}
-
-      {/* From Date Picker */}
       <TouchableOpacity
         onPress={() => showDatePicker('from')}
         style={styles.datePickerButton}>
@@ -142,8 +141,6 @@ const CreateNetworkActivities = ({networkId, close}) => {
             : 'Vælg startdato'}
         </Text>
       </TouchableOpacity>
-
-      {/* To Date Picker */}
       <TouchableOpacity
         onPress={() => showDatePicker('to')}
         style={styles.datePickerButton}>
@@ -151,15 +148,12 @@ const CreateNetworkActivities = ({networkId, close}) => {
           {toDate ? `Til d.: ${toDate.toLocaleDateString()}` : 'Vælg slutdato'}
         </Text>
       </TouchableOpacity>
-
-      {/* Date Picker Modal */}
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
-
       <CustomButton
         onPress={handleSubmit(onSubmit)}
         disabled={uploading}

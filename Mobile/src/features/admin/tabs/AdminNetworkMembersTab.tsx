@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import AdminNetworkMembersListItem from '../components/AdminMembersListItem.tsx';
 import {SCREEN_HEIGHT} from '../../../utils/Dimensions.ts';
 
@@ -14,12 +14,15 @@ interface AdminNetworkMembersTabProps {
   handlePresentModalPress: () => void;
   handleRemoveMember: (uid: string) => void;
 }
+
 const AdminNetworkMembersTab = (props: AdminNetworkMembersTabProps) => {
   const {network, handlePresentModalPress, handleRemoveMember} = props;
 
   return (
     <View style={styles.details}>
-      <TouchableOpacity style={{alignSelf: 'center', paddingVertical: 4}} onPress={handlePresentModalPress}>
+      <TouchableOpacity
+        style={{alignSelf: 'center', paddingVertical: 4}}
+        onPress={handlePresentModalPress}>
         <Text
           style={{
             color: '#1b6cc8',
@@ -29,7 +32,7 @@ const AdminNetworkMembersTab = (props: AdminNetworkMembersTabProps) => {
           Tilføj medlem
         </Text>
       </TouchableOpacity>
-      <ScrollView showsVerticalScrollIndicator={false} style={{}}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {network.users.map(d => (
           <AdminNetworkMembersListItem
             key={d}
@@ -49,7 +52,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingBottom: 40,
     height: SCREEN_HEIGHT / 1.3,
-  }
+  },
 });
 
 export default AdminNetworkMembersTab;

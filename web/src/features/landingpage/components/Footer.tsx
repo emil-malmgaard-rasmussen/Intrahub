@@ -18,18 +18,18 @@ const CustomContainer = styled(Container)(({theme}) => ({
 //         justifyContent: "center",
 //     },
 // }));
-//
-// const FooterLink = styled("a")(({ theme }) => ({
-//     fontSize: "16px",
-//     color: "#FFFFFF",
-//     fontWeight: "300",
-//     cursor: "pointer",
-//     textDecoration: "none",
-//     "&:hover": {
-//         color: "#FFF",
-//         textDecoration: "underline",
-//     },
-// }));
+
+const FooterLink = styled("a")(({ theme }) => ({
+    fontSize: "16px",
+    color: "#FFFFFF",
+    fontWeight: "300",
+    cursor: "pointer",
+    textDecoration: "none",
+    "&:hover": {
+        color: "#FFF",
+        textDecoration: "underline",
+    },
+}));
 
 export default function Footer() {
     return (
@@ -76,21 +76,19 @@ export default function Footer() {
                     {/*    /!*<FooterLink>Dokumenter</FooterLink>*!/*/}
                     {/*</Box>*/}
 
-                    {/*<Box>*/}
-                    {/*    /!*<Typography*!/*/}
-                    {/*    /!*    sx={{*!/*/}
-                    {/*    /!*        fontSize: "20px",*!/*/}
-                    {/*    /!*        color: "#FFFFFF",*!/*/}
-                    {/*    /!*        fontWeight: "700",*!/*/}
-                    {/*    /!*        mb: 2,*!/*/}
-                    {/*    /!*    }}*!/*/}
-                    {/*    /!*>*!/*/}
-                    {/*    /!*    Virksomhed*!/*/}
-                    {/*    /!*</Typography>*!/*/}
-                    {/*    /!*<FooterLink>Terms of use</FooterLink>*!/*/}
-                    {/*    /!*<br/>*!/*/}
-                    {/*    /!*<FooterLink href={'/privacy'}>Privacy</FooterLink>*!/*/}
-                    {/*</Box>*/}
+                    <Box>
+                        <Typography
+                            sx={{
+                                fontSize: "20px",
+                                color: "#FFFFFF",
+                                fontWeight: "700",
+                                mb: 2,
+                            }}
+                        >
+                            Virksomhed
+                        </Typography>
+                        <FooterLink href={'/privacy-policy'}>Privatlivspolitik</FooterLink>
+                    </Box>
 
                     <Box>
                         <Typography

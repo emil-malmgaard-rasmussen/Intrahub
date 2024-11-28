@@ -2,11 +2,12 @@ import {
   Animated,
   Image,
   Keyboard,
+  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useRef} from 'react';
@@ -22,10 +23,14 @@ const RegisterScreen = () => {
     control,
     formState: {errors},
     handleSubmit,
+    watch,
   } = useForm();
   const {register} = useContext<any>(AuthContext);
   const imageHeight = useRef(new Animated.Value(270)).current;
   const {colors} = useThemeContext();
+
+  const passwordValue = watch('password');
+
   const onSubmit = (data: any) => {
     register(data);
   };
@@ -35,7 +40,7 @@ const RegisterScreen = () => {
       'keyboardWillShow',
       () => {
         Animated.timing(imageHeight, {
-          toValue: 0, // Animate the image height to 0 (hide it)
+          toValue: 0,
           duration: 300,
           useNativeDriver: false,
         }).start();
@@ -46,7 +51,7 @@ const RegisterScreen = () => {
       'keyboardWillHide',
       () => {
         Animated.timing(imageHeight, {
-          toValue: 270, // Animate the image height back to 270 (show it)
+          toValue: 270,
           duration: 300,
           useNativeDriver: false,
         }).start();
@@ -65,121 +70,140 @@ const RegisterScreen = () => {
         flex: 1,
         paddingTop: Platform.OS === 'android' ? 45 : 0,
       }}>
-      <Animated.View style={{height: imageHeight, overflow: 'hidden'}}>
-        <Image
-          source={require('../../assets/images/onboarding1.png')}
-          style={styles.image}
-        />
-      </Animated.View>
-      <View style={{marginTop: 50, paddingHorizontal: 15}}>
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          name={'name'}
-          render={({field: {onBlur, value, onChange}}) => (
-            <InputField
-              onChange={onChange}
-              value={value}
-              onBlur={onBlur}
-              label={'Navn...'}
-              icon={
-                <MaterialIcons
-                  name="person-outline"
-                  size={20}
-                  color={errors.name ? 'red' : '#666'}
-                  style={{marginRight: 5}}
-                />
-              }
-              inputType={'name'}
-              error={errors.name}
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView
+          contentContainerStyle={{flexGrow: 1}}
+          keyboardShouldPersistTaps="handled">
+          <Animated.View style={{height: imageHeight, overflow: 'hidden'}}>
+            <Image
+              source={require('../../assets/images/onboarding1.png')}
+              style={styles.image}
             />
-          )}
-        />
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          name={'email'}
-          render={({field: {onBlur, value, onChange}}) => (
-            <InputField
-              onChange={onChange}
-              value={value}
-              onBlur={onBlur}
-              label={'E-mail...'}
-              icon={
-                <MaterialIcons
-                  name="alternate-email"
-                  size={20}
-                  color={errors.email ? 'red' : '#666'}
-                  style={{marginRight: 5}}
+          </Animated.View>
+          <View style={{marginTop: 50, paddingHorizontal: 15}}>
+            {/* Name Field */}
+            <Controller
+              control={control}
+              rules={{required: 'Navn er påkrævet'}}
+              name="name"
+              render={({field: {onBlur, value, onChange}}) => (
+                <InputField
+                  onChangeText={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                  label="Navn..."
+                  icon={
+                    <MaterialIcons
+                      name="person-outline"
+                      size={20}
+                      color={errors.name ? 'red' : '#666'}
+                      style={{marginRight: 5}}
+                    />
+                  }
+                  error={!!errors.name}
+                  errorText={errors.name?.message?.toString()}
                 />
-              }
-              keyboardType="email-address"
-              inputType={'email'}
-              error={errors.email}
+              )}
             />
-          )}
-        />
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          name={'password'}
-          render={({field: {onBlur, value, onChange}}) => (
-            <InputField
-              onChange={onChange}
-              value={value}
-              onBlur={onBlur}
-              label={'Password...'}
-              icon={
-                <MaterialIcons
-                  name="lock-outline"
-                  size={20}
-                  color={errors.password ? 'red' : '#666'}
-                  style={{marginRight: 5}}
+            <Controller
+              control={control}
+              rules={{
+                required: 'E-mail er påkrævet',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Indtast en gyldig e-mail',
+                },
+              }}
+              name="email"
+              render={({field: {onBlur, value, onChange}}) => (
+                <InputField
+                  onChangeText={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                  label="E-mail..."
+                  icon={
+                    <MaterialIcons
+                      name="alternate-email"
+                      size={20}
+                      color={errors.email ? 'red' : '#666'}
+                      style={{marginRight: 5}}
+                    />
+                  }
+                  keyboardType="email-address"
+                  error={!!errors.email}
+                  errorText={errors.email?.message?.toString()}
                 />
-              }
-              error={errors.password}
-              inputType="password"
+              )}
             />
-          )}
-        />
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          name={'repeatPassword'}
-          render={({field: {onBlur, value, onChange}}) => (
-            <InputField
-              onChange={onChange}
-              value={value}
-              onBlur={onBlur}
-              label={'Gentag password...'}
-              icon={
-                <MaterialIcons
-                  name="lock-outline"
-                  size={20}
-                  color={errors.repeatPassword ? 'red' : '#666'}
-                  style={{marginRight: 5}}
+            <Controller
+              control={control}
+              rules={{
+                required: 'Password er påkrævet',
+                minLength: {
+                  value: 6,
+                  message: 'Password skal være mindst 6 tegn',
+                },
+              }}
+              name="password"
+              render={({field: {onBlur, value, onChange}}) => (
+                <InputField
+                  onChangeText={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                  label="Password..."
+                  icon={
+                    <MaterialIcons
+                      name="lock-outline"
+                      size={20}
+                      color={errors.password ? 'red' : '#666'}
+                      style={{marginRight: 5}}
+                    />
+                  }
+                  inputType="password"
+                  error={!!errors.password}
+                  errorText={errors.password?.message?.toString()}
                 />
-              }
-              error={errors.repeatPassword}
-              inputType="password"
+              )}
             />
-          )}
-        />
-        <CustomButton
-          title="Registrer"
-          onPress={handleSubmit(onSubmit)}
-          backgroundColor={colors.button.main} // Optional: uses theme by default
-          textColor="#fff"
-        />
-      </View>
+            <Controller
+              control={control}
+              rules={{
+                required: 'Gentag password er påkrævet',
+                validate: value =>
+                  value === passwordValue || 'Passwords matcher ikke',
+              }}
+              name="repeatPassword"
+              render={({field: {onBlur, value, onChange}}) => (
+                <InputField
+                  onChangeText={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                  label="Gentag password..."
+                  icon={
+                    <MaterialIcons
+                      name="lock-outline"
+                      size={20}
+                      color={errors.repeatPassword ? 'red' : '#666'}
+                      style={{marginRight: 5}}
+                    />
+                  }
+                  inputType="password"
+                  error={!!errors.repeatPassword}
+                  errorText={errors.repeatPassword?.message?.toString()}
+                />
+              )}
+            />
+            <CustomButton
+              title="Registrer"
+              onPress={handleSubmit(onSubmit)}
+              backgroundColor={colors.button.main}
+              textColor="#fff"
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -190,31 +214,10 @@ const styles = StyleSheet.create({
     height: '100%',
     alignSelf: 'center',
   },
-  title: {
-    color: '#1ba16e',
-    fontSize: 22,
-    fontWeight: 'bold',
-    alignSelf: 'center',
-  },
-  description: {
-    color: '#7598a5',
-    width: '80%',
-    textAlign: 'center',
-    marginVertical: 16,
-    alignSelf: 'center',
-  },
-  prevText: {
-    color: '#2196F3',
-    fontSize: 16,
-  },
-  chevronLeft: {
-    color: '#2196F3',
-    paddingRight: 4,
-  },
-  navigateBack: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 4,
   },
 });
 

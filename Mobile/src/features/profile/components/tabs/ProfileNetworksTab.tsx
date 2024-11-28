@@ -10,8 +10,10 @@ import {
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import {ThemeColors} from '../../../../theme/colors.ts';
+import useThemeContext from '../../../../theme/useThemeContext.ts';
 
-const ProfileNetworkItems = ({
+const ProfileNetworkItem = ({
   user,
   networkId,
 }: {
@@ -20,6 +22,8 @@ const ProfileNetworkItems = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [network, setNetwork] = useState<any | null>(null);
+  const {colors} = useThemeContext();
+  const styles = createStyles(colors);
 
   const leaveNetwork = async () => {
     try {
@@ -120,15 +124,10 @@ const ProfileNetworkItems = ({
             alignItems: 'center',
           }}>
           <View style={{flexDirection: 'column', flex: 1}}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                paddingVertical: 7.5,
-              }}>
-              {network.name}
+            <Text style={styles.profileNetworkItemTitle}>{network.name}</Text>
+            <Text style={styles.profileNetworkItemDescription}>
+              {network.description}
             </Text>
-            <Text>{network.description}</Text>
           </View>
           <View>
             <TouchableOpacity onPress={leaveNetwork}>
@@ -142,6 +141,9 @@ const ProfileNetworkItems = ({
 };
 
 const ProfileNetworksTab = ({user}: {user: any}) => {
+  const {colors} = useThemeContext();
+  const styles = createStyles(colors);
+
   if (user.networks.length <= 0) {
     return (
       <View style={styles.details}>
@@ -153,27 +155,37 @@ const ProfileNetworksTab = ({user}: {user: any}) => {
   return (
     <ScrollView style={styles.details}>
       {user.networks.map(d => (
-        <ProfileNetworkItems key={d} user={user} networkId={d} />
+        <ProfileNetworkItem key={d} user={user} networkId={d} />
       ))}
     </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  details: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    paddingBottom: 40,
-  },
-  removeText: {
-    color: '#f31616',
-  },
-  label: {
-    color: '#959595',
-    fontStyle: 'italic',
-    alignSelf: 'center',
-    fontSize: 12
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    details: {
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      paddingBottom: 40,
+    },
+    removeText: {
+      color: '#f31616',
+    },
+    label: {
+      color: '#959595',
+      fontStyle: 'italic',
+      alignSelf: 'center',
+      fontSize: 12,
+    },
+    profileNetworkItemDescription: {
+      color: colors.text.default,
+    },
+    profileNetworkItemTitle: {
+      color: colors.text.default,
+      fontSize: 16,
+      fontWeight: 'bold',
+      paddingVertical: 7.5,
+    },
+  });
 
 export default ProfileNetworksTab;

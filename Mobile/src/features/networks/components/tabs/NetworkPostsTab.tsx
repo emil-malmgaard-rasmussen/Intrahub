@@ -61,7 +61,7 @@ const NetworkPostsTab = ({networkId}) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       {posts.map(post => (
         <TouchableOpacity
           key={post.id}

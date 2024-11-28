@@ -1,3 +1,4 @@
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Animated,
@@ -7,29 +8,41 @@ import {
   Modal,
   Platform,
   SafeAreaView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useContext, useEffect, useRef, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {AuthContext} from '../../auth/AuthProvider.tsx';
-import InputField from '../../components/inputs/InputField.tsx';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import auth from '@react-native-firebase/auth';
-import useThemeContext from '../../theme/useThemeContext.ts';
-import CustomButton from '../../components/buttons/CustomButton.tsx';
+import InputField from '../../components/inputs/InputField';
+import CustomButton from '../../components/buttons/CustomButton';
+import {AuthContext} from '../../auth/AuthProvider';
+import useThemeContext from '../../theme/useThemeContext';
+import {ThemeColors} from '../../theme/colors.ts';
 
-const LoginScreen = ({navigation}) => {
-  const {control, handleSubmit} = useForm();
+type LoginFormInputs = {
+  email: string;
+  password: string;
+};
+
+type LoginScreenProps = {
+  navigation: any; // Replace `any` with proper type from your navigation library, e.g., `StackNavigationProp`
+};
+
+const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
+  const {control, handleSubmit} = useForm<LoginFormInputs>();
   const {login} = useContext<any>(AuthContext);
-  const imageHeight = useRef(new Animated.Value(270)).current;
   const {colors} = useThemeContext();
+  const imageHeight = useRef(new Animated.Value(270)).current;
   const [isModalVisible, setModalVisible] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
 
-  const onSubmit = async data => {
+  const styles = createStyles(colors);
+
+  const onSubmit = async (data: {email: string; password: string}) => {
     login(data.email, data.password);
   };
 
@@ -75,60 +88,58 @@ const LoginScreen = ({navigation}) => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{flex: 1}}>
-      <SafeAreaView style={{flex: 1}}>
-        <View style={{paddingHorizontal: 15}}>
-          <Animated.View style={{height: imageHeight, overflow: 'hidden'}}>
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <Animated.View style={[styles.imageContainer, {height: imageHeight}]}>
             <Image
               source={require('../../assets/images/login-image-user.png')}
-              style={{height: '100%', width: '100%'}}
+              style={styles.image}
             />
           </Animated.View>
-          <View style={{paddingTop: 60}}>
+          <View style={styles.inputContainer}>
             <Controller
               control={control}
               rules={{required: true}}
-              name={'email'}
+              name="email"
               render={({field: {onChange, onBlur, value}}) => (
                 <InputField
                   onBlur={onBlur}
                   value={value}
-                  onChange={onChange}
-                  label={'Email...'}
+                  onChangeText={onChange}
+                  inputType={'default'}
+                  label="Email..."
                   icon={
                     <MaterialIcons
                       name="alternate-email"
                       size={20}
-                      color="#666"
-                      style={{marginRight: 5}}
+                      color={'#666'}
                     />
                   }
                   keyboardType="email-address"
-                  inputType={'email'}
                 />
               )}
             />
             <Controller
               control={control}
               rules={{required: true}}
-              name={'password'}
+              name="password"
               render={({field: {onChange, onBlur, value}}) => (
                 <InputField
                   onBlur={onBlur}
                   value={value}
-                  onChange={onChange}
-                  label={'Password...'}
+                  onChangeText={onChange}
+                  label="Password..."
                   icon={
                     <MaterialIcons
                       name="lock-outline"
                       size={20}
-                      color="#666"
-                      style={{marginRight: 5}}
+                      color={'#666'}
                     />
                   }
                   inputType="password"
-                  fieldButtonLabel={'Glemt?'}
+                  fieldButtonLabel="Glemt?"
                   fieldButtonFunction={() => setModalVisible(true)}
                 />
               )}
@@ -140,75 +151,40 @@ const LoginScreen = ({navigation}) => {
             backgroundColor={colors.button.main}
             textColor="#fff"
           />
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginTop: 30,
-            }}>
-            <Text>Ny bruger?</Text>
+          <View style={styles.registerContainer}>
+            <Text style={styles.newUserText}>Ny bruger?</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text
-                style={{
-                  color: colors.button.main,
-                  fontWeight: '700',
-                  paddingLeft: 3,
-                }}>
-                Registrer
-              </Text>
+              <Text style={styles.registerText}>Registrer</Text>
             </TouchableOpacity>
           </View>
           <Modal
-            transparent={true}
+            transparent
             visible={isModalVisible}
             animationType="slide"
             onRequestClose={() => setModalVisible(false)}>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'rgba(0,0,0,0.5)',
-              }}>
-              <View
-                style={{
-                  width: '80%',
-                  padding: 20,
-                  backgroundColor: 'white',
-                  borderRadius: 10,
-                }}>
-                <Text
-                  style={{fontSize: 18, fontWeight: 'bold', marginBottom: 15}}>
-                  Glemt Password
-                </Text>
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Glemt Password</Text>
                 <TextInput
-                  style={{
-                    borderBottomWidth: 1,
-                    borderBottomColor: '#ccc',
-                    marginBottom: 20,
-                    paddingVertical: 5,
-                  }}
+                  style={styles.modalInput}
                   placeholder="Email"
                   value={resetEmail}
                   onChangeText={setResetEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
                 />
-                <TouchableOpacity
-                  onPress={handlePasswordReset}
-                  style={{
-                    backgroundColor: '#1ba16e',
-                    padding: 10,
-                    borderRadius: 5,
-                    alignItems: 'center',
-                  }}>
-                  <Text style={{color: 'white', fontWeight: '600'}}>Send</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={{marginTop: 10, alignItems: 'center'}}>
-                  <Text style={{color: '#1ba16e'}}>Cancel</Text>
-                </TouchableOpacity>
+                <View style={{flexDirection: 'row', justifyContent: 'center', gap: 50}}>
+                  <TouchableOpacity
+                    onPress={handlePasswordReset}
+                    style={styles.modalButton}>
+                    <Text style={styles.modalButtonText}>Send</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.modalCancel}>
+                    <Text style={styles.modalCancelText}>Annuller</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </Modal>
@@ -217,5 +193,67 @@ const LoginScreen = ({navigation}) => {
     </KeyboardAvoidingView>
   );
 };
+
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {flex: 1},
+    content: {paddingHorizontal: 15},
+    imageContainer: {overflow: 'hidden'},
+    image: {height: '100%', width: '100%'},
+    inputContainer: {paddingTop: 60},
+    registerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: 30,
+    },
+    registerText: {
+      color: colors.button.main,
+      fontWeight: '700',
+      paddingLeft: 3,
+    },
+    modalOverlay: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+      width: '80%',
+      padding: 20,
+      backgroundColor: colors.backgrounds.main,
+      borderRadius: 10,
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 15,
+    },
+    modalInput: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      marginBottom: 20,
+      paddingVertical: 5,
+    },
+    modalButton: {
+      backgroundColor: colors.button.main,
+      padding: 10,
+      borderRadius: 5,
+      alignItems: 'center',
+    },
+    modalButtonText: {
+      color: colors.text.light,
+      fontWeight: '600',
+    },
+    newUserText: {
+      color: colors.text.default,
+    },
+    modalCancel: {
+      marginTop: 10,
+      alignItems: 'center',
+    },
+    modalCancelText: {
+      color: colors.text.light,
+    },
+  });
 
 export default LoginScreen;
