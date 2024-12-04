@@ -1,9 +1,11 @@
-import {collection, doc, getDoc, getDocs, limit, orderBy, query, Timestamp, where} from 'firebase/firestore';
+import {addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, Timestamp, where} from 'firebase/firestore';
 import {db} from '../Firebase';
 import {getNetworkId} from '../utils/LocalStorage';
 import {EmployeeApvModel} from './models/EmployeeApvModel';
 import {ProjectApvModel} from './models/ProjectApvModel';
 import {Answer, ApvAnswer} from './models/ApvAnswerModel';
+import {ApvActionPlan, ApvActions} from './models/ApvActionPlan';
+import {getAuth} from 'firebase/auth';
 
 
 export async function fetchApvs(): Promise<EmployeeApvModel[]> {
@@ -77,7 +79,7 @@ export const fetchApv = async (apvId: string): Promise<EmployeeApvModel | Projec
     }
 };
 
-export const fetchApvAnswers = async (
+export const fetchApvEmployeeAnswersByEmployee = async (
     apvId: string,
     participantUid: string
 ): Promise<ApvAnswer | null> => {
@@ -102,6 +104,40 @@ export const fetchApvAnswers = async (
                 createdByUid: data.createdByUid as string,
                 answers: data.answers as Answer[],
             };
+        } else {
+            console.log('No answers found for the given participant.');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching APV answers:', error);
+        throw error;
+    }
+};
+
+export const fetchApvEmployeeAnswers = async (
+    apvId: string,
+): Promise<ApvAnswer[] | null> => {
+    try {
+        const answersQuery = query(
+            collection(db, 'APV', apvId, 'answers'),
+            orderBy('createdAt', 'desc')
+        );
+
+        const answersSnapshot = await getDocs(answersQuery);
+
+        if (!answersSnapshot.empty) {
+            const answers: ApvAnswer[] = answersSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    apvId,
+                    createdAt: data.createdAt as Timestamp,
+                    createdBy: data.createdBy as string,
+                    createdByUid: data.createdByUid as string,
+                    answers: data.answers as Answer[],
+                };
+            });
+
+            return answers;
         } else {
             console.log('No answers found for the given participant.');
             return null;
@@ -155,3 +191,81 @@ export async function fetchApvStatsForChart(apvId: string) {
         return {categories: [], series: []};
     }
 }
+
+
+/**
+ * Save a new action plan under a specific APV.
+ *
+ * @param apvId - The ID of the APV to associate the action plan with.
+ * @param actionPlanData - The data of the action plan to save.
+ * @returns A promise resolving to the ID of the newly created action plan document.
+ */
+
+export const saveActionPlan = async (
+    apvId: string,
+    actionPlanData: ApvActions[]
+): Promise<string> => {
+    try {
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            throw new Error("User not authenticated");
+        }
+
+        const actionPlan: ApvActionPlan = {
+            apvId,
+            createdByUid: currentUser.uid,
+            createdAt: Timestamp.fromDate(new Date()),
+            actions: actionPlanData.map((action: ApvActions) => ({
+                issue: action.issue,
+                action: action.action,
+                responsible: action.responsible,
+                deadline: action.deadline,
+                status: action.status,
+            })),
+        };
+
+        const actionPlansRef = collection(doc(db, "APV", apvId), "actionPlans");
+
+        const docRef = await addDoc(actionPlansRef, {
+            ...actionPlan,
+        });
+
+        return docRef.id;
+    } catch (error) {
+        console.error("Error saving action plan:", error);
+        throw error;
+    }
+};
+
+
+/**
+ * Fetch the latest action plan for a specific APV without requiring a Firestore index.
+ *
+ * @param apvId - The ID of the APV to fetch the latest action plan for.
+ * @returns A promise resolving to the latest ApvActionPlan or null if none exist.
+ */
+export const fetchLatestActionPlan = async (apvId: string): Promise<ApvActionPlan | null> => {
+    try {
+        const actionPlansRef = collection(doc(db, "APV", apvId), "actionPlans");
+
+        const querySnapshot = await getDocs(actionPlansRef);
+
+        if (querySnapshot.empty) {
+            return null;
+        }
+
+        const actionPlans = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        })) as unknown as ApvActionPlan[];
+
+        return actionPlans.sort(
+            (a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()
+        )[0];
+    } catch (error) {
+        console.error("Error fetching the latest action plan:", error);
+        throw error;
+    }
+};

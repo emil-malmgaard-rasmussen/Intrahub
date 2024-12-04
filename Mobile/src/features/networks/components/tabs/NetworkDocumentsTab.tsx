@@ -287,7 +287,7 @@ const RenderApvDocuments = ({doc}: {doc: any}) => {
   const themeStyles = styles(colors);
 
   return (
-    <View style={{flex: 1, padding: 5}}>
+    <ScrollView style={{flex: 1, padding: 5}}>
       <Text style={themeStyles.apvDocumentContent}>Titel: {doc.title}</Text>
       <Text style={themeStyles.apvDocumentContent}>
         Oprettet af: {doc.createdBy}
@@ -307,8 +307,7 @@ const RenderApvDocuments = ({doc}: {doc: any}) => {
         <ScrollView
           keyboardShouldPersistTaps="handled"
           horizontal
-          style={{marginBottom: 20}}
-          nestedScrollEnabled={true}>
+          style={{marginBottom: 20}}>
           <View style={{borderWidth: 1, borderColor: '#ddd', borderRadius: 8}}>
             <View style={[themeStyles.tableRow, {backgroundColor: '#f4f4f4'}]}>
               <View style={themeStyles.tableHeader}>
@@ -384,7 +383,7 @@ const RenderApvDocuments = ({doc}: {doc: any}) => {
           <Text style={themeStyles.apvDocumentContent}>{doc.conclusion}</Text>
         </>
       )}
-    </View>
+    </ScrollView>
   );
 };
 

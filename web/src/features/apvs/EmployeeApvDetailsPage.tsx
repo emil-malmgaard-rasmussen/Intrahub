@@ -52,7 +52,7 @@ export const EmployeeApvDetailsPage = () => {
                         onClick={() => navigate('/apvs')}
                         sx={{cursor: 'pointer'}}
                     >
-                        APV'er
+                        Liste
                     </Link>
                     <Typography color="text.primary">Detaljer</Typography>
                 </Breadcrumbs>

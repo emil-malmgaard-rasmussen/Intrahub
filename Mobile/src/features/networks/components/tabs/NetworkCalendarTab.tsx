@@ -11,25 +11,22 @@ const NetworkCalendarTab = ({networkId}: {networkId: string}) => {
   const [activities, setActivities] = useState<any[]>([]);
   const {refresh} = useRefreshContext();
 
-  // Helper function to mark the period (fromDate to toDate)
   const markActivityPeriod = (fromDate: string, toDate?: string) => {
     let marked = {};
 
     if (toDate) {
-      // If both fromDate and toDate are provided, mark the period
       marked = {
         ...marked,
         [fromDate]: {
           marked: true,
-          dotColor: '#0aada8', // Starting dot color
+          dotColor: '#0aada8',
         },
         [toDate]: {
           marked: true,
-          dotColor: '#0aada8', // Ending dot color
+          dotColor: '#0aada8',
         },
       };
 
-      // Mark all dates in between as part of the activity period
       let currentDate = moment(fromDate);
       while (currentDate.isBefore(moment(toDate).add(1, 'day'))) {
         const dateString = currentDate.format('YYYY-MM-DD');
@@ -67,19 +64,19 @@ const NetworkCalendarTab = ({networkId}: {networkId: string}) => {
 
       const activityPeriod = markActivityPeriod(fromDate, toDate);
 
-      acc = { ...acc, ...activityPeriod };
-
-      // Store activities in each marked date
       Object.keys(activityPeriod).forEach(date => {
         if (!acc[date]) {
           acc[date] = {
+            marked: true,
+            dotColor: '#0aada8',
             activities: [],
           };
         }
-        acc[date].activities = [...(acc[date].activities || []), {
+
+        acc[date].activities.push({
           title: activity.title,
           description: activity.description,
-        }];
+        });
       });
 
       return acc;
@@ -89,6 +86,7 @@ const NetworkCalendarTab = ({networkId}: {networkId: string}) => {
   };
 
   const handleDayPress = day => {
+    console.log(day)
     setSelectedDate(day.dateString);
     const selectedActivities = markedDates[day.dateString]?.activities || [];
     setActivities(selectedActivities);

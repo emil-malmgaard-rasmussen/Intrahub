@@ -53,7 +53,6 @@ const CreateNetworkActivities = ({networkId, close}) => {
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
-        console.log("CREATED")
         triggerRefresh();
         setDisplaySuccessAlert(!displaySuccessAlert);
       })

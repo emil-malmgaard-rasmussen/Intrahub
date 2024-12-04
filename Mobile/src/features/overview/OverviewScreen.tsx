@@ -23,6 +23,45 @@ const OverviewScreen = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [activities, setActivities] = useState<any[]>([]);
 
+  const markActivityPeriod = (fromDate: string, toDate?: string) => {
+    let marked = {};
+
+    if (toDate) {
+      marked = {
+        ...marked,
+        [fromDate]: {
+          marked: true,
+          dotColor: '#0aada8',
+        },
+        [toDate]: {
+          marked: true,
+          dotColor: '#0aada8',
+        },
+      };
+
+      let currentDate = moment(fromDate);
+      while (currentDate.isBefore(moment(toDate).add(1, 'day'))) {
+        const dateString = currentDate.format('YYYY-MM-DD');
+        if (!marked[dateString]) {
+          marked[dateString] = {
+            marked: true,
+            color: '#0aada8', // Color for the range of dates
+            selectedColor: '#0aada8', // Color to indicate selection
+          };
+        }
+        currentDate.add(1, 'day');
+      }
+    } else {
+      // If toDate is not provided, only mark the single date
+      marked[fromDate] = {
+        marked: true,
+        dotColor: '#0aada8',
+      };
+    }
+
+    return marked;
+  };
+
   const renderBanner = (item: any) => {
     return <BannerSlider data={item} />;
   };
@@ -58,29 +97,32 @@ const OverviewScreen = () => {
       .where('networkId', 'in', networkIds)
       .get();
 
-    const activities = networksSnapshot.docs.map(doc => doc.data());
+    const activitiesSnapshot = networksSnapshot.docs.map(doc => doc.data());
 
-    const marked = activities.reduce((acc, activity) => {
-      const activityDate = moment(activity.dateFrom.toDate()).format(
-        'YYYY-MM-DD',
-      );
+    const marked = activitiesSnapshot.reduce((acc, activity) => {
+      const fromDate = moment(activity.dateFrom.toDate()).format('YYYY-MM-DD');
+      const toDate = activity.dateTo ? moment(activity.dateTo.toDate()).format('YYYY-MM-DD') : undefined;
 
-      if (!acc[activityDate]) {
-        acc[activityDate] = {
-          marked: true,
-          selected: false,
-          selectedColor: '#0aada8',
-          activities: [],
-        };
-      }
+      const activityPeriod = markActivityPeriod(fromDate, toDate);
 
-      acc[activityDate].activities.push({
-        title: activity.title,
-        description: activity.description,
+      Object.keys(activityPeriod).forEach(date => {
+        if (!acc[date]) {
+          acc[date] = {
+            marked: true,
+            dotColor: '#0aada8',
+            activities: [],
+          };
+        }
+
+        acc[date].activities.push({
+          title: activity.title,
+          description: activity.description,
+        });
       });
 
       return acc;
     }, {});
+
     setMarkedDates(marked);
   };
 

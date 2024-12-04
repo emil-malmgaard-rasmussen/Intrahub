@@ -110,7 +110,11 @@ const ApvListPage = () => {
                     )
                 ))}
             </Grid>
-            <Pagination count={10} color="primary" sx={{mt: 8, mx: 'auto'}}/>
+            <Pagination
+                count={Math.ceil(apvs.length / 10)}
+                color="primary"
+                sx={{mt: 8, mx: 'auto'}}
+            />
             <ApvDrawer open={open} displayDrawer={setOpen} showNotification={setNotificationOpen}/>
             <Snackbar
                 open={notificationOpen}

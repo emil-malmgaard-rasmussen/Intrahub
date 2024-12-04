@@ -5,6 +5,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import {Label} from '../../../components/Label';
 import {EmployeeApvModel, Participant} from '../../../firebase/models/EmployeeApvModel';
+import React from 'react';
+import {SeeMoreEmployeeApvButton} from './buttons/SeeMoreEmployeeApvButton';
 
 export const EmployeeApvItem = ({apv}: { apv: EmployeeApvModel }) => {
     const renderProject = (
@@ -50,17 +52,7 @@ export const EmployeeApvItem = ({apv}: { apv: EmployeeApvModel }) => {
                         Medarbejdere: {apv.participants.map((participant: Participant, index: number) => `${participant.displayName}${index < apv.participants.length && ', '}`)}
                     </Typography>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <Typography variant="subtitle1">
-                            <Typography
-                                component="span"
-                                variant="body1"
-                                sx={{
-                                    color: 'text.disabled',
-                                }}
-                            >
-                                Start: N/A
-                            </Typography>
-                        </Typography>
+                        <SeeMoreEmployeeApvButton apvId={apv.id} />
                     </Box>
                 </Stack>
             </Card>

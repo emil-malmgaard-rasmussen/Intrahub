@@ -1,7 +1,7 @@
 import {useNavigate, useParams} from 'react-router-dom';
 import {Box, Breadcrumbs, Link, Paper, Stack, Table, TableBody, Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
-import {fetchApvAnswers} from '../../firebase/ApvQueries';
+import {fetchApvEmployeeAnswersByEmployee} from '../../firebase/ApvQueries';
 import { Scrollbar } from '../../components/Scrollbar';
 import TableContainer from '@mui/material/TableContainer';
 import {ParticipantAnswerTableHead, ParticipantAnswerTableRow} from './components/table/ParticipantAnswerTable';
@@ -13,10 +13,9 @@ export const EmployeeApvAnswerDetailsPage = () => {
     const navigate = useNavigate();
     const [answer, setAnswer] = useState<any>();
     const table = useTable();
-    console.log(answer)
 
     useEffect(() => {
-        fetchApvAnswers(id, uid).then(d => setAnswer(d))
+        fetchApvEmployeeAnswersByEmployee(id, uid).then(d => setAnswer(d))
     }, []);
 
     if (!answer) {
@@ -33,7 +32,7 @@ export const EmployeeApvAnswerDetailsPage = () => {
                         onClick={() => navigate('/apvs')}
                         sx={{cursor: 'pointer'}}
                     >
-                        APV'er
+                        Liste
                     </Link>
                     <Link
                         underline="hover"

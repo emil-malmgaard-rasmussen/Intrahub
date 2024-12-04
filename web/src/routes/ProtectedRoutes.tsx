@@ -19,6 +19,8 @@ import {CreateNetworkPage} from '../features/networks/CreateNetworkPage';
 import {ApvDetailsPage} from '../features/apvs/ApvDetailsPage';
 import {EmployeeApvAnswerDetailsPage} from '../features/apvs/EmployeeApvAnswerDetailsPage';
 import ActivitiesListPage from '../features/activities/ActivitiesListPage';
+import {CreateActionPlanDetails} from '../features/apvs/CreateActionPlanDetails';
+import {ActionPlanDetails} from '../features/apvs/ActionPlanDetails';
 
 const ProtectedRoutes = () => {
     const { user } = useAuth();
@@ -100,6 +102,8 @@ const ProtectedRoutes = () => {
                 <Route path="/apvs" element={<ApvListPage />} />
                 <Route path="/apvs/:id" element={<ApvDetailsPage />} />
                 <Route path="/apvs/:id/employee/:uid/answers" element={<EmployeeApvAnswerDetailsPage />} />
+                <Route path="/apvs/:id/create-action-plan" element={<CreateActionPlanDetails />} />
+                <Route path="/apvs/:id/see-action-plan" element={<ActionPlanDetails />} />
                 <Route path="/organization/settings" element={<EditNetworkPage />} />
             </Route>
         </Routes>
