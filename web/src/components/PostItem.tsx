@@ -1,46 +1,28 @@
-import type { CardProps } from '@mui/material/Card';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
+import type {CardProps} from '@mui/material/Card';
 import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
+import {Link} from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import {Iconify} from './Iconify';
-import {fShortenNumber} from '../utils/FormatNumber';
 import {SvgColor} from './SvgColor';
-import { varAlpha } from '../theme/styles/utils';
-import { Timestamp } from 'firebase/firestore';
-
-export type PostItemProps = {
-    id: string;
-    title: string;
-    imageUrl: string;
-    totalViews: number;
-    text: string;
-    totalShares: number;
-    totalComments: number;
-    totalFavorites: number;
-    createdAt: Timestamp;
-    author: {
-        name: string;
-        avatarUrl: string;
-    };
-};
+import {varAlpha} from '../theme/styles/utils';
+import {PostModel} from '../firebase/models/PostModel';
 
 export function PostItem({
                              sx,
                              post,
+                             postId,
                              latestPost,
                              latestPostLarge,
                              ...other
                          }: CardProps & {
-    post: PostItemProps;
+    post: PostModel;
     latestPost: boolean;
     latestPostLarge: boolean;
+    postId: string;
 }) {
     const renderAvatar = (
         <Avatar
-            alt={post.author?.name}
-            src={post.author?.avatarUrl}
             sx={{
                 left: 24,
                 zIndex: 9,
@@ -54,57 +36,43 @@ export function PostItem({
     );
 
     const renderTitle = (
-        <Link
+        <Typography
             color="inherit"
             variant="subtitle2"
-            underline="hover"
             sx={{
                 height: 44,
                 overflow: 'hidden',
                 WebkitLineClamp: 2,
                 display: '-webkit-box',
                 WebkitBoxOrient: 'vertical',
-                ...(latestPostLarge && { typography: 'h5', height: 60 }),
+                ...(latestPostLarge && {typography: 'h5', height: 60}),
                 ...((latestPostLarge || latestPost) && {
                     color: 'common.white',
                 }),
             }}
         >
             {post.title}
-        </Link>
+        </Typography>
     );
 
-    const renderInfo = (
-        <Box
-            gap={1.5}
-            display="flex"
-            flexWrap="wrap"
-            justifyContent="flex-end"
+    const renderBio = (
+        <Typography
+            color="inherit"
+            variant="subtitle2"
             sx={{
-                mt: 3,
-                color: 'text.disabled',
+                height: 44,
+                overflow: 'hidden',
+                WebkitLineClamp: 2,
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                ...(latestPostLarge && {typography: 'h5', height: 60}),
+                ...((latestPostLarge || latestPost) && {
+                    color: 'common.white',
+                }),
             }}
         >
-            {[
-                { number: post.totalComments, icon: 'solar:chat-round-dots-bold' },
-                { number: post.totalViews, icon: 'solar:eye-bold' },
-                { number: post.totalShares, icon: 'solar:share-bold' },
-            ].map((info, _index) => (
-                <Box
-                    key={_index}
-                    display="flex"
-                    sx={{
-                        ...((latestPostLarge || latestPost) && {
-                            opacity: 0.64,
-                            color: 'common.white',
-                        }),
-                    }}
-                >
-                    <Iconify width={16} icon={info.icon} sx={{ mr: 0.5 }} />
-                    <Typography variant="caption">{fShortenNumber(info.number)}</Typography>
-                </Box>
-            ))}
-        </Box>
+            {post.bio}
+        </Typography>
     );
 
     const renderCover = (
@@ -116,7 +84,7 @@ export function PostItem({
                 top: 0,
                 width: 1,
                 height: 1,
-                objectFit: 'cover',
+                objectFit: post.imageUrl ? 'contain' : 'cover',
                 position: 'absolute',
             }}
         />
@@ -150,55 +118,57 @@ export function PostItem({
                 bottom: -16,
                 position: 'absolute',
                 color: 'background.paper',
-                ...((latestPostLarge || latestPost) && { display: 'none' }),
+                ...((latestPostLarge || latestPost) && {display: 'none'}),
             }}
         />
     );
 
     return (
-        <Card sx={sx} {...other}>
-            <Box
-                sx={(theme) => ({
-                    position: 'relative',
-                    pt: 'calc(100% * 3 / 4)',
-                    ...((latestPostLarge || latestPost) && {
-                        pt: 'calc(100% * 4 / 3)',
-                        '&:after': {
-                            top: 0,
-                            content: "''",
-                            width: '100%',
-                            height: '100%',
-                            position: 'absolute',
-                            bgcolor: varAlpha(theme.palette.grey['900Channel'], 0.72),
-                        },
-                    }),
-                    ...(latestPostLarge && {
-                        pt: {
-                            xs: 'calc(100% * 4 / 3)',
-                            sm: 'calc(100% * 3 / 4.66)',
-                        },
-                    }),
-                })}
-            >
-                {renderShape}
-                {renderAvatar}
-                {renderCover}
-            </Box>
+        <Link to={`/posts/${postId}`}>
+            <Card sx={sx} {...other}>
+                <Box
+                    sx={(theme) => ({
+                        position: 'relative',
+                        pt: 'calc(100% * 3 / 4)',
+                        ...((latestPostLarge || latestPost) && {
+                            pt: 'calc(100% * 4 / 3)',
+                            '&:after': {
+                                top: 0,
+                                content: "''",
+                                width: '100%',
+                                height: '100%',
+                                position: 'absolute',
+                                bgcolor: varAlpha(theme.palette.grey['900Channel'], 0.72),
+                            },
+                        }),
+                        ...(latestPostLarge && {
+                            pt: {
+                                xs: 'calc(100% * 4 / 3)',
+                                sm: 'calc(100% * 3 / 4.66)',
+                            },
+                        }),
+                    })}
+                >
+                    {renderShape}
+                    {renderAvatar}
+                    {renderCover}
+                </Box>
 
-            <Box
-                sx={(theme) => ({
-                    p: theme.spacing(6, 3, 3, 3),
-                    ...((latestPostLarge || latestPost) && {
-                        width: 1,
-                        bottom: 0,
-                        position: 'absolute',
-                    }),
-                })}
-            >
-                {renderDate}
-                {renderTitle}
-                {renderInfo}
-            </Box>
-        </Card>
+                <Box
+                    sx={(theme) => ({
+                        p: theme.spacing(6, 3, 3, 3),
+                        ...((latestPostLarge || latestPost) && {
+                            width: 1,
+                            bottom: 0,
+                            position: 'absolute',
+                        }),
+                    })}
+                >
+                    {renderDate}
+                    {renderTitle}
+                    {renderBio}
+                </Box>
+            </Card>
+        </Link>
     );
 }

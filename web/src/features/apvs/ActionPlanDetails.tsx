@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {Box, Breadcrumbs, CircularProgress, Grid2, Link, Paper, Stack, Typography,} from '@mui/material';
 import {Scrollbar} from '../../components/Scrollbar';
-import {fetchApvEmployeeAnswers, fetchLatestActionPlan} from '../../firebase/ApvQueries';
+import {fetchApvEmployeeAnswers, fetchActionPlan} from '../../firebase/ApvQueries';
 import {ApvActionPlan} from '../../firebase/models/ApvActionPlan';
 import {Answer, ApvAnswer} from '../../firebase/models/ApvAnswerModel';
 
@@ -53,7 +53,7 @@ export const ActionPlanDetails = () => {
     // Fetch the action plan when the component loads
     useEffect(() => {
         const fetchData = async () => {
-            const fetchedActionPlan = await fetchLatestActionPlan(id);
+            const fetchedActionPlan = await fetchActionPlan(id);
             setActionPlan(fetchedActionPlan);
             setLoading(false);
         };

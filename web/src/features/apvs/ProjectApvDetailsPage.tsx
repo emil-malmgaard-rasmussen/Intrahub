@@ -71,16 +71,6 @@ export const ProjectApvDetailsPage = () => {
             </Paper>
             <Paper variant="outlined" sx={{p: 2, mb: 3}}>
                 <Typography variant="h6">Risici</Typography>
-                {/*<Stack spacing={2}>*/}
-                {/*    {apv.risks?.map((risk: ApvRiskModel, index: number) => (*/}
-                {/*        <Box key={index} sx={{p: 1, border: '1px solid', borderRadius: 1}}>*/}
-                {/*            <Typography variant="subtitle1">Name: {risk.name}</Typography>*/}
-                {/*            <Typography variant="body2">Description: {risk.description}</Typography>*/}
-                {/*            <Typography variant="body2">Assessment: {risk.assessment}</Typography>*/}
-                {/*            <Typography variant="body2">Preventive Measures: {risk.preventiveMeasures}</Typography>*/}
-                {/*        </Box>*/}
-                {/*    ))}*/}
-                {/*</Stack>*/}
                 <Scrollbar>
                     <TableContainer sx={{overflow: 'unset', marginY: 2}}>
                         <Table sx={{minWidth: 800}}>

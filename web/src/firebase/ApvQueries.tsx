@@ -241,12 +241,12 @@ export const saveActionPlan = async (
 
 
 /**
- * Fetch the latest action plan for a specific APV without requiring a Firestore index.
+ * Fetch action plan for a specific APV.
  *
  * @param apvId - The ID of the APV to fetch the latest action plan for.
  * @returns A promise resolving to the latest ApvActionPlan or null if none exist.
  */
-export const fetchLatestActionPlan = async (apvId: string): Promise<ApvActionPlan | null> => {
+export const fetchActionPlan = async (apvId: string): Promise<ApvActionPlan | null> => {
     try {
         const actionPlansRef = collection(doc(db, "APV", apvId), "actionPlans");
 

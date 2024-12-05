@@ -2,13 +2,13 @@ import type { Theme, SxProps } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
-import { PostItemProps } from '../../../components/PostItem';
 import { Iconify } from '../../../components/Iconify';
 import { ChangeEvent } from 'react';
+import {FetchedPostModel} from '../../../firebase/models/PostModel';
 
 type PostSearchProps = {
-    posts: PostItemProps[];
-    onSearch: (searchText: string) => void;  // Add this prop
+    posts: FetchedPostModel[];
+    onSearch: (searchText: string) => void;
     sx?: SxProps<Theme>;
 };
 

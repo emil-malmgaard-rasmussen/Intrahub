@@ -145,7 +145,7 @@ export const CreateActionPlanDetails = () => {
                 </Stack>
                 <Paper variant="outlined" sx={{p: 2, my: 3}}>
                     <Stack direction="row" spacing={1} alignItems="center">
-                        <Typography variant="body1">Udarbejde en handlingsplan for medarbejder APV, til højre ser du
+                        <Typography variant="body1">Udarbejd en handlingsplan for medarbejder APV, til højre ser du
                             spørgsmål og herunder besvarelser for medarbejderne i perioden</Typography>
                     </Stack>
                 </Paper>

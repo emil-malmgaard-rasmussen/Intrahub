@@ -1,27 +1,31 @@
 import Box from '@mui/material/Box';
 import {Button, CircularProgress, Drawer, IconButton, TextField, Typography} from '@mui/material';
 import {useForm} from 'react-hook-form';
-import {ChangeEvent, useState} from 'react';
+import {ChangeEvent, useEffect, useState} from 'react';
 import {useTheme} from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import {getAuth} from 'firebase/auth';
-import {getNetworkId} from  '../../../utils/LocalStorage';
+import {getNetworkId} from '../../../utils/LocalStorage';
 import {addDoc, collection, serverTimestamp} from 'firebase/firestore';
-import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
+import {deleteObject, getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import {db, storage} from '../../../Firebase';
 import Divider from '@mui/material/Divider';
 import {Iconify} from '../../../components/Iconify';
 import Badge from '@mui/material/Badge';
+import {PostModel} from '../../../firebase/models/PostModel';
+import {updatePost} from '../../../firebase/PostQueries';
+import {useParams} from 'react-router-dom';
 
 export interface PostDrawerProps {
     open: boolean;
     displayDrawer: (value: boolean) => void;
-    showNotification: (value: boolean) => void;
+    setNotificationsState: (title: string, value: boolean) => void;
+    selectedPost?: PostModel;
 }
 
-export const PostDrawer = (props: PostDrawerProps) => {
+export const PostsDrawer = (props: PostDrawerProps) => {
     const theme = useTheme();
-    const {open, displayDrawer, showNotification} = props;
+    const {open, displayDrawer, setNotificationsState, selectedPost} = props;
     const {register, handleSubmit, watch, reset} = useForm();
     const titleWatch = watch('title');
     const bioWatch = watch('bio');
@@ -30,6 +34,7 @@ export const PostDrawer = (props: PostDrawerProps) => {
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState<boolean>(false);
     const networkId = getNetworkId();
+    const {id = ''} = useParams();
 
     const handleResetFilter = () => {
         reset();
@@ -59,20 +64,65 @@ export const PostDrawer = (props: PostDrawerProps) => {
         setFile(null)
     };
 
+    const handleUpdatePost = async (data: any) => {
+        setUploading(true);
+        let imageUrl =  preview;
+
+        if (file) {
+            if (selectedPost!.imageUrl) {
+                try {
+                    const oldImagePath = selectedPost!.imageUrl.split('/o/')[1]?.split('?')[0]?.replace(/%2F/g, '/');
+                    const oldImageRef = ref(storage, decodeURIComponent(oldImagePath));
+                    await deleteObject(oldImageRef);
+                } catch (error) {
+                    console.error('Error deleting old image: ', error);
+                }
+            }
+
+            const imageRef = ref(storage, `posts/${networkId}/${Date.now()}`);
+            try {
+                await uploadBytes(imageRef, file);
+                imageUrl = await getDownloadURL(imageRef);
+            } catch (error) {
+                console.error('Error uploading image: ', error);
+            }
+        }
+
+        if(selectedPost!.imageUrl && !preview) {
+            try {
+                const oldImagePath = selectedPost!.imageUrl.split('/o/')[1]?.split('?')[0]?.replace(/%2F/g, '/');
+                const oldImageRef = ref(storage, decodeURIComponent(oldImagePath));
+                await deleteObject(oldImageRef);
+                imageUrl = '';
+            } catch (error) {
+                console.error('Error deleting old image: ', error);
+            }
+        }
+
+        data.imageUrl = imageUrl;
+
+        await updatePost(data, id);
+        setNotificationsState('Opslaget er nu opdateret', true);
+        displayDrawer(false);
+    };
+
     const onSubmit = async (data: any) => {
+        if (selectedPost) {
+            await handleUpdatePost(data);
+            return;
+        }
         const user = getAuth().currentUser;
         if (!user) return;
 
         const uid = user.uid;
         setUploading(true);
-        let imageUrl = '';
+        let imageUrl = preview;
 
         if (file) {
             const imageRef = ref(storage, `posts/${networkId}/${Date.now()}`);
             try {
                 await uploadBytes(imageRef, file);
                 imageUrl = await getDownloadURL(imageRef);
-                console.log("UPLOADED", imageUrl);
             } catch (error) {
                 console.error('Error uploading image: ', error);
             }
@@ -88,7 +138,7 @@ export const PostDrawer = (props: PostDrawerProps) => {
                 networkId,
                 createdAt: serverTimestamp(),
             });
-            showNotification(true);
+            setNotificationsState('Opslaget er nu oprettet', true);
             reset();
         } catch (error) {
             console.error('Error adding document: ', error);
@@ -97,6 +147,27 @@ export const PostDrawer = (props: PostDrawerProps) => {
             displayDrawer(false);
         }
     };
+
+    useEffect(() => {
+        if (selectedPost) {
+            reset({
+                title: selectedPost.title,
+                bio: selectedPost.bio,
+                text: selectedPost.text,
+            });
+            if (selectedPost.imageUrl) {
+                setPreview(selectedPost.imageUrl);
+            }
+        } else {
+            reset({
+                title: '',
+                bio: '',
+                text: '',
+            });
+            setPreview(null);
+            setFile(null);
+        }
+    }, [selectedPost, reset]);
 
     return (
         <Drawer open={open} onClose={() => displayDrawer(false)} anchor={'right'}>
@@ -240,7 +311,7 @@ export const PostDrawer = (props: PostDrawerProps) => {
                             </Button>
                         </Box>
                         <Button variant="contained" color="primary" fullWidth type="submit" disabled={uploading}>
-                            {uploading ? <CircularProgress color={'inherit'}/> : 'Opret'}
+                            {uploading ? <CircularProgress color={'inherit'}/> : selectedPost ? 'Opdater' : 'Opret'}
                         </Button>
                     </form>
                 </Box>

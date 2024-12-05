@@ -8,13 +8,13 @@ import CardHeader from '@mui/material/CardHeader';
 import ListItemText from '@mui/material/ListItemText';
 import {Scrollbar} from '../../../components/Scrollbar';
 import {Iconify} from '../../../components/Iconify';
-import {PostItemProps} from '../../../components/PostItem';
+import {FetchedPostModel} from '../../../firebase/models/PostModel';
 
 
 type Props = CardProps & {
     title?: string;
     subheader?: string;
-    list: PostItemProps[];
+    list: FetchedPostModel[];
 };
 
 export function AnalyticsPosts({title, subheader, list, ...other}: Props) {
@@ -43,11 +43,7 @@ export function AnalyticsPosts({title, subheader, list, ...other}: Props) {
     );
 }
 
-// ----------------------------------------------------------------------
-
 function PostItem({sx, item, ...other}: BoxProps & { item: Props['list'][number] }) {
-
-    console.log(item)
     return (
         <Box
             sx={{

@@ -125,6 +125,7 @@ const DashboardPage = () => {
 
                     <Grid size={{xs: 16, sm: 9, md: 4}}>
                         <AnalyticsWidgetSummary
+                            navigateTo={'/users'}
                             title="Brugere"
                             total={network ? network.users.length : 0} // Use network data safely
                             color="secondary"
@@ -138,6 +139,7 @@ const DashboardPage = () => {
 
                     <Grid size={{xs: 16, sm: 9, md: 4}}>
                         <AnalyticsWidgetSummary
+                            navigateTo={'/posts'}
                             title="Opslag"
                             total={posts.length}
                             color="error"

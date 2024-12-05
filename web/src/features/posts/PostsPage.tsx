@@ -3,45 +3,53 @@ import React, {SyntheticEvent, useCallback, useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import {Alert, Container, Snackbar, SnackbarCloseReason} from '@mui/material';
+import {Alert, Container, Pagination, Snackbar, SnackbarCloseReason} from '@mui/material';
 import {Breakpoint, useTheme} from '@mui/material/styles';
 import {Iconify} from '../../components/Iconify';
 import {collection, getDocs, getFirestore, orderBy, query, where} from 'firebase/firestore';
-import { Pagination } from '@mui/material'
 import {PostItem} from '../../components/PostItem';
 import {PostSearch} from './components/PostsSearch';
 import {PostSort} from './components/PostSort';
-import {getNetworkId} from  '../../utils/LocalStorage';
+import {getNetworkId} from '../../utils/LocalStorage';
 import Grid from '@mui/material/Grid2';
-import {PostDrawer} from './components/PostDrawer';
+import {PostsDrawer} from './components/PostsDrawer';
+import {FetchedPostModel} from '../../firebase/models/PostModel';
+import {useLocation} from 'react-router-dom';
 
 const db = getFirestore();
 
 const PostsPage = () => {
     const [sortBy, setSortBy] = useState('desc');
     const networkId = getNetworkId();
+    const location = useLocation();
     const handleSort = useCallback((newSort: string) => {
         setSortBy(newSort);
     }, []);
     const theme = useTheme();
     const [filterName, setFilterName] = useState('');
-    const [posts, setPosts] = useState<any[]>([]);
+    const [posts, setPosts] = useState<FetchedPostModel[]>([]);
     const [page, setPage] = useState(1);
     const postsPerPage = 10;
     const [loading, setLoading] = useState(true);
     const layoutQuery: Breakpoint = 'lg';
     const [open, setOpen] = useState(false);
-    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationState, setNotificationState] = useState<{
+        title: string,
+        show: boolean
+    }>(location.state ? location.state.notificationState : {show: false, title: ''});
 
     const handleNotificationClose = (event?: SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
         if (reason === 'clickaway') return;
-        setNotificationOpen(false);
+        setNotificationState({title: '', show: false});
     };
 
     const handleChangePage = (event: any, value: any) => {
         setPage(value);
     };
 
+    const handleNotificationChange = (title: string, value: boolean) => {
+        setNotificationState({title, show: value});
+    };
 
     const handleSearch = (newFilterName: string) => {
         setFilterName(newFilterName);
@@ -52,12 +60,11 @@ const PostsPage = () => {
         post.title?.toLowerCase().includes(filterName.toLowerCase())
     );
 
-    const paginatedPosts = filteredPosts.slice((page - 1) * postsPerPage, page * postsPerPage);
+    const paginatedPosts: FetchedPostModel[] = filteredPosts.slice((page - 1) * postsPerPage, page * postsPerPage);
 
 
     const fetchPosts = async () => {
         try {
-            console.log(sortBy)
             setLoading(true);
             const postsRef = collection(db, 'POSTS');
 
@@ -71,9 +78,8 @@ const PostsPage = () => {
             const postsData = postsSnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-            }));
+            }) as FetchedPostModel);
 
-            console.log(postsData);
             setPosts(postsData);
         } catch (error) {
             console.error("Error fetching documents:", error);
@@ -84,7 +90,7 @@ const PostsPage = () => {
 
     useEffect(() => {
         fetchPosts();
-    }, [networkId, sortBy]);
+    }, [networkId, sortBy, notificationState]);
 
     if (loading) return <div>Loading...</div>;
 
@@ -119,7 +125,7 @@ const PostsPage = () => {
             </Box>
 
             <Box display="flex" alignItems="center" justifyContent="space-between" sx={{mb: 5}}>
-                <PostSearch posts={posts} onSearch={handleSearch} />
+                <PostSearch posts={posts} onSearch={handleSearch}/>
                 <PostSort
                     sortBy={sortBy}
                     onSort={handleSort}
@@ -130,13 +136,18 @@ const PostsPage = () => {
                 />
             </Box>
             <Grid container spacing={3}>
-                {paginatedPosts.map((post, index) => {
+                {paginatedPosts.map((post: FetchedPostModel, index: number) => {
                     const latestPostLarge = index === 0;
                     const latestPost = index === 1 || index === 2;
 
                     return (
                         <Grid key={post.id} size={{xs: 12, sm: latestPostLarge ? 12 : 6, md: latestPostLarge ? 6 : 3}}>
-                            <PostItem post={post} latestPost={latestPost} latestPostLarge={latestPostLarge}/>
+                            <PostItem
+                                post={post}
+                                latestPost={latestPost}
+                                latestPostLarge={latestPostLarge}
+                                postId={post.id}
+                            />
                         </Grid>
                     );
                 })}
@@ -146,17 +157,21 @@ const PostsPage = () => {
                 page={page}
                 onChange={handleChangePage}
                 color="primary"
-                sx={{ mt: 8, mx: 'auto' }}
+                sx={{mt: 8, mx: 'auto'}}
             />
-            <PostDrawer open={open} displayDrawer={setOpen} showNotification={setNotificationOpen} />
+            <PostsDrawer
+                open={open}
+                displayDrawer={setOpen}
+                setNotificationsState={handleNotificationChange}
+            />
             <Snackbar
-                open={notificationOpen}
+                open={notificationState.show}
                 autoHideDuration={4000}
                 onClose={handleNotificationClose}
                 anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             >
                 <Alert onClose={handleNotificationClose} severity="success" variant="filled">
-                    Opslaget er nu oprettet
+                    {notificationState.title}
                 </Alert>
             </Snackbar>
         </Container>
